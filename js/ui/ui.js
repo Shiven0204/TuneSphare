@@ -17,7 +17,7 @@ export function createUI(songs) {
   const searchInput = document.querySelector("#song-search");
   const navigationLinks = document.querySelectorAll(".nav-link");
 
-  function createTrackRow(song, songIndex, likedSongIds) {
+  function createTrackRow(song, songIndex, likedSongIds, durationMap = {}) {
     const trackRow = document.createElement("article");
     const trackNumber = document.createElement("span");
     const miniArt = document.createElement("div");
@@ -46,7 +46,7 @@ export function createUI(songs) {
     artist.textContent = song.artist;
     trackInfo.append(title, artist);
     trackMeta.className = "track-meta";
-    trackMeta.textContent = "--:--";
+    trackMeta.textContent = durationMap[song.id] || "--:--";
     likeButton.className = "icon-button like-button";
     likeButton.type = "button";
     likeButton.dataset.songId = String(song.id);
@@ -59,8 +59,10 @@ export function createUI(songs) {
     likeButton.classList.toggle("is-liked", isLiked);
     playButton.className = "icon-button track-play";
     playButton.type = "button";
+    playButton.dataset.songId = String(song.id);
     playButton.setAttribute("aria-label", `Play ${song.title}`);
     playButton.textContent = "▶";
+
     trackRow.append(
       trackNumber,
       miniArt,
@@ -72,7 +74,13 @@ export function createUI(songs) {
     return trackRow;
   }
 
-  function renderCollection(container, collection, emptyMessage, likedSongIds) {
+  function renderCollection(
+    container,
+    collection,
+    emptyMessage,
+    likedSongIds,
+    durationMap = {}
+  ) {
     if (!container) return;
     container.replaceChildren();
     if (collection.length === 0) {
@@ -83,40 +91,92 @@ export function createUI(songs) {
       return;
     }
     collection.forEach((song) =>
-      container.append(createTrackRow(song, songs.indexOf(song), likedSongIds))
+      container.append(
+        createTrackRow(song, songs.indexOf(song), likedSongIds, durationMap)
+      )
     );
   }
 
-  function renderSongs(collection, emptyMessage, likedSongIds) {
-    renderCollection(trackList, collection, emptyMessage, likedSongIds);
+  function renderSongs(collection, emptyMessage, likedSongIds, durationMap) {
+    renderCollection(
+      trackList,
+      collection,
+      emptyMessage,
+      likedSongIds,
+      durationMap
+    );
   }
 
-  function renderLibrary(collections, likedSongIds) {
+  function renderLibrary(collections, likedSongIds, durationMap) {
     renderCollection(
       libraryLikedList,
       collections.liked,
       collections.likedMessage,
-      likedSongIds
+      likedSongIds,
+      durationMap
     );
     renderCollection(
       libraryRecentList,
       collections.recent,
       collections.recentMessage,
-      likedSongIds
+      likedSongIds,
+      durationMap
     );
     renderCollection(
       libraryAllList,
       collections.all,
       "No songs found.",
-      likedSongIds
+      likedSongIds,
+      durationMap
     );
+  }
+
+  function updateTrackLikeState(songId, isLiked, songTitle = "") {
+    const likeButtons = document.querySelectorAll(
+      `.like-button[data-song-id="${songId}"]`
+    );
+    likeButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(isLiked));
+      button.classList.toggle("is-liked", isLiked);
+      button.textContent = isLiked ? "♥" : "♡";
+      if (songTitle) {
+        button.setAttribute(
+          "aria-label",
+          isLiked ? `Unlike ${songTitle}` : `Like ${songTitle}`
+        );
+      }
+    });
+  }
+
+  function updateTrackDurations(durationMap) {
+    document.querySelectorAll(".track-row").forEach((row) => {
+      const songId = Number(row.dataset.songId);
+      const metaSpan = row.querySelector(".track-meta");
+      if (metaSpan && durationMap[songId]) {
+        metaSpan.textContent = durationMap[songId];
+      }
+    });
   }
 
   function updateActiveSong(currentSongId, isPlaying) {
     document.querySelectorAll(".track-row").forEach((row) => {
-      const active = Number(row.dataset.songId) === currentSongId && isPlaying;
-      row.classList.toggle("active-song", active);
-      row.setAttribute("aria-current", active ? "true" : "false");
+      const songId = Number(row.dataset.songId);
+      const isThisSongActive = songId === currentSongId;
+      const activeAndPlaying = isThisSongActive && isPlaying;
+
+      row.classList.toggle("active-song", isThisSongActive);
+      row.setAttribute("aria-current", isThisSongActive ? "true" : "false");
+
+      const playBtn = row.querySelector(".track-play");
+      if (playBtn) {
+        const songTitle =
+          row.querySelector(".track-info h3")?.textContent || "track";
+        playBtn.textContent = activeAndPlaying ? "❚❚" : "▶";
+        playBtn.setAttribute(
+          "aria-label",
+          activeAndPlaying ? `Pause ${songTitle}` : `Play ${songTitle}`
+        );
+      }
     });
   }
 
@@ -138,6 +198,8 @@ export function createUI(songs) {
     },
     renderSongs,
     renderLibrary,
+    updateTrackLikeState,
+    updateTrackDurations,
     updateActiveSong,
     showView,
     setActiveNavigation,

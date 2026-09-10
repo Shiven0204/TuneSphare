@@ -6,7 +6,7 @@ export const songs = [
     album: "Barsaat",
     genre: "Hindi Pop",
     source: "music/Banjaare & Roni - Barsaat - (320 Kbps).mp3",
-    cover: "assets/images/default-album.jpg",
+    cover: "assets/images/covers/barsaat.jpg",
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const songs = [
     album: "Bairan",
     genre: "Hindi Pop",
     source: "music/Banjaare - Bairan - (320 Kbps).mp3",
-    cover: "assets/images/default-album.jpg",
+    cover: "assets/images/covers/bairan.jpg",
   },
   {
     id: 3,
@@ -25,6 +25,6 @@ export const songs = [
     genre: "Bollywood",
     source:
       "music/Sharib Toshi, Sunidhi Chauhan, & Sharib Sabri - Tu Zaroori (From _Zid_) - (320 Kbps).mp3",
-    cover: "assets/images/default-album.jpg",
+    cover: "assets/images/covers/tu-zaroori.jpg",
   },
 ];

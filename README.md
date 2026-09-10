@@ -1,72 +1,76 @@
 # EchoVerse
 
-A modern music web application built with HTML, CSS, and vanilla JavaScript.
+A modern local music web application built with HTML5, CSS3, and vanilla JavaScript.
 
 ## Current Phase
 
-Phase 5 - JavaScript Architecture
+Stage A1 — Codebase Cleanup & Interactive UX Polish
 
 ## Technologies
 
 - HTML5
-- CSS3
-- JavaScript
+- CSS3 (Vanilla design tokens, flexbox & CSS grid)
+- JavaScript (Native ES Modules)
+- HTML5 Audio API
+- LocalStorage
 
 ## Current Features
 
-- Responsive music streaming UI
-- Sidebar navigation
-- Search interface
-- Music cards
-- Featured section
-- Recently played section
-- Playlist section
-- Music player UI
+- Responsive music streaming UI dashboard
+- Sidebar navigation & mobile navigation drawer
+- Track search & real-time filtering across titles, artists, albums, and genres
+- Local music playback (Play/Pause, Next, Previous, Auto-advance)
+- Throttled seek-bar dragging with `requestAnimationFrame` and ARIA accessibility
+- Dedicated album artwork for all tracks
+- Real-time audio metadata duration loading
+- Like/unlike tracks with targeted in-place DOM updates
+- Persistent liked songs and recently played history in LocalStorage
 
-## Phase 4 - LocalStorage & User Library
+## Stage A1 Accomplishments
 
-- Like/unlike songs
-- Persistent liked songs
-- Recently played tracking
-- Persistent recently played history
-- Library view
-- Empty states
-- Search integration
-- Persistent user state
+- **Track Play/Pause Fix**: Direct play button (`▶`/`❚❚`) and row activation logic cleanly toggles pause/play on current active song without restarting track position.
+- **Targeted DOM Updates**: Liking a track updates only the target row's heart icon, `aria-pressed`, and class state, eliminating full collection re-renders and scroll resets.
+- **Smooth Seek-Bar Dragging**: Throttled pointer drag visual progress using `requestAnimationFrame`, committing audio `currentTime` on release to prevent stuttering/crackling.
+- **Seek-Bar Accessibility**: Added `role="slider"`, `tabindex="0"`, `aria-valuenow`, `aria-valuetext`, and `ArrowLeft`/`ArrowRight`/`Home`/`End` keyboard seeking support.
+- **Dead CSS Purge**: Audited and removed 350+ lines of legacy unused CSS rules (`.welcome-panel`, `.featured-grid`, `.playlist-card`, `.profile-button`, etc.).
+- **Async Real Durations**: Asynchronously preloads track metadata to display formatted `M:SS` song durations instead of `--:--`.
+- **Initialization TDZ Fix**: Re-architected startup flow into a clean `initApp()` controller function.
+- **Dedicated Album Artwork**: Assigned unique album cover artwork for `Barsaat`, `Bairan`, and `Tu Zaroori`.
 
-## Phase 5 - JavaScript Architecture
-
-- Native ES modules
-- Separated song data, player, storage, search, and UI responsibilities
-- Application controller for coordination
-- Improved maintainability without changing the user experience
-
-### JavaScript Structure
+### JavaScript Architecture
 
 ```text
 js/
-├── app.js
-├── data/songs.js
-├── player/player.js
-├── search/search.js
-├── storage/storage.js
-└── ui/ui.js
+├── app.js            # Controlled application initialization & event handlers
+├── data/songs.js     # Master song metadata and audio/cover source paths
+├── player/player.js  # Audio player engine, volume, seek bar & playback
+├── search/search.js  # Pure function search and filtering logic
+├── storage/storage.js # LocalStorage read/write for liked/recent tracks
+└── ui/ui.js          # Dynamic DOM rendering, targeted state updates & navigation
 ```
 
-Run EchoVerse through a local development server because browser ES modules do not reliably load from `file://` URLs. For example:
+## How to Run Locally
 
-```text
+Run EchoVerse through a local HTTP development server because ES modules require standard HTTP origin context:
+
+```bash
 python -m http.server 8000
 ```
 
-## Completed Phases
+Then open `http://localhost:8000` in your web browser.
 
-- Phase 1 - UI foundation
-- Phase 2 - Music playback and player controls
-- Phase 3 - Dynamic music library, search, and filtering
-- Phase 4 - LocalStorage and user library
+## Phase History
 
-## Future Phases
+- **Phase 1** — UI foundation & dashboard layout
+- **Phase 2** — Music playback & player controls
+- **Phase 3** — Dynamic music library, search, and filtering
+- **Phase 4** — LocalStorage & user library persistence
+- **Phase 5** — Native ES module architecture refactoring
+- **Stage A1** — Codebase cleanup, targeted DOM updates, seek-bar throttling & accessibility polish
 
-- Phase 5 - API integration
-- Phase 6 - Advanced features
+## Future Roadmap
+
+- **Stage A2** — Queue management, Shuffle, and Repeat modes
+- **Stage A3** — User-created custom playlists
+- **Stage B** — Web Audio API equalizer visualizer
+- **Stage C** — Backend / API integration & React migration

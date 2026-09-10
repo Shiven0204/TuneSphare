@@ -5,19 +5,6 @@
   .topbar {
     gap: 18px;
   }
-  .profile-name,
-  .profile-chevron {
-    display: none;
-  }
-  .featured-grid {
-    gap: 14px;
-  }
-  .welcome-panel {
-    padding: 36px;
-  }
-  .sound-orbit {
-    width: 220px;
-  }
 }
 
 @media (max-width: 780px) {
@@ -65,45 +52,8 @@
     max-width: none;
     margin-left: 0;
   }
-  .profile-button {
-    order: 1;
-    margin-left: auto;
-  }
   .main-content {
     padding: 28px 22px 44px;
-  }
-  .welcome-panel {
-    min-height: 320px;
-    padding: 31px 27px;
-    align-items: flex-start;
-  }
-  .sound-orbit {
-    position: absolute;
-    right: -18px;
-    bottom: 12px;
-    width: 205px;
-    opacity: 0.7;
-  }
-  .welcome-caption {
-    right: 20px;
-    bottom: 17px;
-  }
-  .featured-grid {
-    grid-template-columns: repeat(3, minmax(145px, 1fr));
-    overflow-x: auto;
-    padding: 2px 1px 10px;
-    scroll-snap-type: x mandatory;
-  }
-  .featured-grid .music-card {
-    scroll-snap-align: start;
-  }
-  .compact-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .playlist-grid {
-    grid-template-columns: repeat(3, minmax(165px, 1fr));
-    overflow-x: auto;
-    padding-bottom: 8px;
   }
   .player-bar {
     grid-template-columns: 1fr auto;
@@ -137,36 +87,12 @@
     padding-right: 16px;
     padding-left: 16px;
   }
-  .welcome-panel {
-    min-height: 340px;
-    padding: 26px 21px;
-  }
-  .welcome-copy h2 {
-    font-size: 32px;
-    letter-spacing: -1.2px;
-  }
-  .welcome-copy p {
-    max-width: 245px;
-    font-size: 13px;
-  }
-  .welcome-caption {
-    font-size: 9px;
-  }
   .section-heading h2 {
     font-size: 20px;
-  }
-  .text-link {
-    font-size: 10px;
-  }
-  .compact-grid {
-    gap: 14px 11px;
   }
   .track-row {
     grid-template-columns: 23px 40px minmax(0, 1fr) 32px 30px 30px;
     gap: 9px;
-  }
-  .track-more {
-    display: none;
   }
   .mini-art {
     width: 40px;
@@ -174,9 +100,6 @@
   }
   .track-meta {
     font-size: 10px;
-  }
-  .player-like {
-    display: none;
   }
   .player-bar {
     padding-right: 14px;
