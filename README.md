@@ -4,7 +4,7 @@ A modern local music web application built with HTML5, CSS3, and vanilla JavaScr
 
 ## Current Phase
 
-Stage A2.2 — Shuffle + Repeat
+Stage A2.4 — Advanced Player UX
 
 ## Technologies
 
@@ -35,6 +35,13 @@ Stage A2.2 — Shuffle + Repeat
 - Repeat Off, Repeat All, and Repeat One modes
 - Queue-aware mode selection without mutating the persisted queue order
 - Persisted playback modes with keyboard-accessible controls
+- Enhanced Now Playing artwork, metadata, duration, and playback-state feedback
+- Loading, buffering, and user-facing audio error states
+- Targeted like, queue, and playback status announcements
+- Reduced-motion-aware player state animation and responsive player controls
+- A2.4 polished Now Playing state with loading, buffering, and playback-error feedback
+- Stable album artwork fallback, synchronized time/progress, and improved volume/mute UX
+- Targeted like/queue status feedback with reduced-motion-aware state animation
 
 ## Stage A1 Accomplishments
 
@@ -90,6 +97,16 @@ Modifier combinations remain available to the browser, repeated action keys are
 ignored, and the shortcut reference is available from the Keyboard shortcuts
 button. Existing touch and pointer controls remain available.
 
+### A2.4 — Advanced Player UX
+
+The final Vanilla JavaScript polish adds synchronized Now Playing artwork and
+metadata, explicit Playing, Paused, Loading, Buffering, and Playback Error
+states, stable progress and duration updates, accessible volume/mute behavior,
+and concise live feedback for likes and queue actions. Artwork has a safe
+fallback, transitions update together, and high-frequency progress updates
+avoid redundant DOM writes. The player, queue, dialog, and controls remain
+usable at desktop, tablet, and mobile widths, with reduced-motion support.
+
 ## Phase History
 
 - **Phase 1** — UI foundation & dashboard layout
@@ -101,6 +118,8 @@ button. Existing touch and pointer controls remain available.
 - **Stage A2.1** — Queue management
 - **Stage A2.2** — Shuffle and Repeat playback modes
 - **Stage A2.3** — Keyboard controls and global shortcuts
+- **Stage A2.4** — Advanced Player UX and final Vanilla JavaScript polish
+- **Stage A2.4** — Advanced Player UX and final Vanilla JavaScript polish
 
 ## Future Roadmap
 

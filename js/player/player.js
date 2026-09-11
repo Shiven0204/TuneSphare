@@ -1,6 +1,6 @@
-function formatTime(totalSeconds) {
+function formatTime(totalSeconds, fallback = "0:00") {
   if (!Number.isFinite(totalSeconds) || totalSeconds < 0) {
-    return "0:00";
+    return fallback;
   }
 
   const minutes = Math.floor(totalSeconds / 60);
@@ -10,12 +10,15 @@ function formatTime(totalSeconds) {
 
 export function createPlayer(
   songs,
-  { onPlay, onPause, queue, modes, onModeChange }
+  { onPlay, onPause, queue, modes, onModeChange, onStatus }
 ) {
   const audio = document.getElementById("audio-player");
   const titleElement = document.querySelector(".now-playing-copy strong");
   const artistElement = document.querySelector(".now-playing-copy span");
   const artworkElement = document.querySelector(".player-art");
+  const artworkImage = document.querySelector(".player-art-image");
+  const playbackStateElement = document.querySelector(".playback-state");
+  const playerBar = document.querySelector(".player-bar");
   const playButton = document.querySelector(".play-button");
   const currentTimeElement = document.querySelector(".time-current");
   const durationElement = document.querySelector(".time-total");
@@ -39,6 +42,34 @@ export function createPlayer(
   let queueCycle = [];
   let queueCycleRemaining = [];
   let playbackHistory = [];
+  let playbackState = "paused";
+  let lastProgressText = "";
+  let lastDurationText = "";
+  let lastProgressWidth = "";
+
+  function setPlaybackState(state, message = "") {
+    playbackState = state;
+    if (playerBar) {
+      playerBar.dataset.playbackState = state;
+      playerBar.setAttribute(
+        "aria-busy",
+        String(state === "loading" || state === "buffering")
+      );
+    }
+    if (playbackStateElement) {
+      playbackStateElement.textContent =
+        state === "playing"
+          ? "Playing"
+          : state === "loading"
+          ? "Loading"
+          : state === "buffering"
+          ? "Buffering"
+          : state === "error"
+          ? "Playback error"
+          : "Paused";
+    }
+    if (message) onStatus?.(message, state === "error");
+  }
 
   function updateProgress() {
     if (!audio) return;
@@ -46,22 +77,30 @@ export function createPlayer(
     // Do not overwrite visual progress while dragging
     if (isDraggingProgress) return;
 
-    const currentTime = audio.currentTime || 0;
-    const duration = audio.duration || 0;
-    const percentage = duration ? (currentTime / duration) * 100 : 0;
+    const currentTime = Number.isFinite(audio.currentTime)
+      ? audio.currentTime
+      : 0;
+    const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
+    const percentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+    const currentText = formatTime(currentTime);
+    const durationText = formatTime(duration, "--:--");
+    const progressWidth = `${percentage}%`;
 
-    if (currentTimeElement)
-      currentTimeElement.textContent = formatTime(currentTime);
-    if (durationElement) durationElement.textContent = formatTime(duration);
-    if (progressValue) {
-      progressValue.style.width = `${percentage}%`;
-    }
+    if (currentTimeElement && currentText !== lastProgressText)
+      currentTimeElement.textContent = currentText;
+    if (durationElement && durationText !== lastDurationText)
+      durationElement.textContent = durationText;
+    if (progressValue && progressWidth !== lastProgressWidth)
+      progressValue.style.width = progressWidth;
+    lastProgressText = currentText;
+    lastDurationText = durationText;
+    lastProgressWidth = progressWidth;
     if (progressTrack) {
       const roundedVal = Math.round(percentage);
       progressTrack.setAttribute("aria-valuenow", String(roundedVal));
       progressTrack.setAttribute(
         "aria-valuetext",
-        `${formatTime(currentTime)} of ${formatTime(duration)}`
+        `${currentText} of ${duration ? durationText : "duration unavailable"}`
       );
     }
   }
@@ -87,24 +126,34 @@ export function createPlayer(
   }
 
   function updateSongInfo(song) {
-    if (titleElement) titleElement.textContent = song.title;
-    if (artistElement) artistElement.textContent = song.artist;
+    const title = song.title || "Unknown track";
+    const artist = song.artist || "Unknown artist";
+    if (titleElement) titleElement.textContent = title;
+    if (artistElement) artistElement.textContent = artist;
     if (artworkElement) {
-      artworkElement.style.backgroundImage = `url('${song.cover}')`;
-      artworkElement.style.backgroundSize = "cover";
-      artworkElement.style.backgroundPosition = "center";
+      artworkElement.style.backgroundImage = "none";
+      artworkElement.setAttribute("aria-label", `Album artwork for ${title}`);
       const label = artworkElement.querySelector("span");
-      if (label) label.textContent = song.title.slice(0, 2).toUpperCase();
+      if (label) label.textContent = title.slice(0, 2).toUpperCase();
+    }
+    if (artworkImage) {
+      artworkImage.hidden = true;
+      artworkImage.alt = `Album artwork for ${title}`;
+      artworkImage.src = song.cover || "";
     }
   }
 
   function reportPlaybackError(error) {
     if (error.name !== "AbortError") console.error("Playback failed:", error);
     updatePlayButton(false);
+    if (error.name !== "AbortError") {
+      setPlaybackState("error", "Unable to play this track.");
+    }
   }
 
   function playCurrentSong() {
     if (!audio) return;
+    setPlaybackState("loading");
     audio
       .play()
       .then(() => updatePlayButton(true))
@@ -129,10 +178,18 @@ export function createPlayer(
   function loadSong(index, shouldPlay = false) {
     if (!songs[index]) return;
     currentSongIndex = index;
+    lastProgressText = "";
+    lastDurationText = "";
+    lastProgressWidth = "";
     audio.pause();
-    audio.src = songs[index].source;
+    setPlaybackState("loading");
+    audio.src = songs[index].source || "";
     updateSongInfo(songs[index]);
     updateProgress();
+    if (!songs[index].source) {
+      setPlaybackState("error", "This track has no audio source.");
+      return;
+    }
     if (shouldPlay) {
       playCurrentSong();
     }
@@ -350,18 +407,33 @@ export function createPlayer(
 
   if (audio) {
     audio.volume = previousVolume;
+    audio.addEventListener("loadstart", () => setPlaybackState("loading"));
     audio.addEventListener("play", () => {
+      setPlaybackState("playing");
       updatePlayButton(true);
       onPlay(songs[currentSongIndex]);
     });
     audio.addEventListener("pause", () => {
+      if (playbackState !== "error") setPlaybackState("paused");
       updatePlayButton(false);
       onPause();
     });
-    audio.addEventListener("loadedmetadata", updateProgress);
-    audio.addEventListener("canplay", updateProgress);
+    audio.addEventListener("playing", () => setPlaybackState("playing"));
+    audio.addEventListener("waiting", () => setPlaybackState("buffering"));
+    audio.addEventListener("loadedmetadata", () => {
+      updateProgress();
+      if (audio.paused) setPlaybackState("paused");
+    });
+    audio.addEventListener("canplay", () => {
+      updateProgress();
+      if (audio.paused && playbackState !== "error") setPlaybackState("paused");
+    });
     audio.addEventListener("timeupdate", updateProgress);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", () => {
+      if (audio.error?.code === 1) return;
+      setPlaybackState("error", "This track could not be loaded.");
+    });
   }
 
   if (playButton) {
@@ -395,6 +467,15 @@ export function createPlayer(
 
   if (volumeIcon && audio) {
     volumeIcon.addEventListener("click", toggleMute);
+  }
+
+  if (artworkImage) {
+    artworkImage.addEventListener("load", () => {
+      artworkImage.hidden = false;
+    });
+    artworkImage.addEventListener("error", () => {
+      artworkImage.hidden = true;
+    });
   }
 
   if (progressTrack) {

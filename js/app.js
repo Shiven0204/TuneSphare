@@ -131,6 +131,7 @@ function initApp() {
     } else {
       ui.updateTrackLikeState(songId, !isCurrentlyLiked, song.title);
     }
+    ui.showStatus(`${song.title} ${isCurrentlyLiked ? "unliked" : "liked"}`);
   }
 
   function addToRecentlyPlayed(songId) {
@@ -149,6 +150,7 @@ function initApp() {
     queue,
     modes,
     onModeChange: (state) => ui.updatePlaybackModes(state),
+    onStatus: (message, isError) => ui.showStatus(message, isError),
     onPlay: (song) => {
       addToRecentlyPlayed(song.id);
       ui.updateActiveSong(song.id, true);
@@ -219,7 +221,10 @@ function initApp() {
 
     const queueRemove = event.target.closest(".queue-remove");
     if (queueRemove) {
-      queue.removeFromQueue(Number(queueRemove.dataset.queueSongId));
+      const song = getSongById(Number(queueRemove.dataset.queueSongId));
+      if (queue.removeFromQueue(Number(queueRemove.dataset.queueSongId))) {
+        ui.showStatus(`${song?.title || "Track"} removed from queue`);
+      }
       return;
     }
 
@@ -257,9 +262,9 @@ function initApp() {
   if (searchForm) {
     searchForm.addEventListener("submit", (event) => event.preventDefault());
   }
-  document
-    .querySelector(".clear-queue")
-    ?.addEventListener("click", () => queue.clearQueue());
+  document.querySelector(".clear-queue")?.addEventListener("click", () => {
+    if (queue.clearQueue()) ui.showStatus("Queue cleared");
+  });
 
   const sidebar = document.querySelector("#sidebar");
   const openButton = document.querySelector("[data-nav-open]");

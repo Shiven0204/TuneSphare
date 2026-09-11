@@ -20,6 +20,7 @@ export function createUI(songs) {
   const shortcutsButton = document.querySelector(".shortcuts-button");
   const shortcutsDialog = document.querySelector(".shortcuts-dialog");
   const shortcutsClose = document.querySelector(".shortcuts-close");
+  const appStatus = document.querySelector(".app-status");
   let queueReturnFocus = null;
   let dialogReturnFocus = null;
 
@@ -217,6 +218,13 @@ export function createUI(songs) {
   function showQueueFeedback(message) {
     const feedback = document.querySelector(".queue-feedback");
     if (feedback) feedback.textContent = message;
+    showStatus(message);
+  }
+
+  function showStatus(message, isError = false) {
+    if (!appStatus) return;
+    appStatus.textContent = message;
+    appStatus.setAttribute("role", isError ? "alert" : "status");
   }
 
   function focusQueue() {
@@ -337,6 +345,7 @@ export function createUI(songs) {
     updatePlaybackModes,
     focusQueue,
     closeOverlays,
+    showStatus,
     updateActiveSong,
     showView,
     setActiveNavigation,

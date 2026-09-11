@@ -94,6 +94,12 @@
         </header>
 
         <main class="main-content" id="home">
+          <div
+            class="app-status"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          ></div>
           <div class="content-grid">
             <section
               class="content-section popular-section"
@@ -125,7 +131,7 @@
                   Clear
                 </button>
               </div>
-              <p class="queue-feedback" role="status" aria-live="polite"></p>
+              <p class="queue-feedback" aria-hidden="true"></p>
               <div class="queue-list" aria-label="Up next"></div>
             </aside>
           </div>
@@ -162,9 +168,21 @@
       <audio id="audio-player" preload="metadata"></audio>
 
       <div class="now-playing">
-        <div class="player-art artwork-static"><span>BR</span></div>
+        <div
+          class="player-art artwork-static"
+          aria-label="Album artwork for Barsaat"
+        >
+          <img
+            class="player-art-image"
+            src="assets/images/covers/barsaat.jpg"
+            alt="Album artwork for Barsaat"
+            hidden
+          />
+          <span aria-hidden="true">BR</span>
+        </div>
         <div class="now-playing-copy">
           <strong>Barsaat</strong><span>Banjaare &amp; Roni</span>
+          <small class="playback-state">Paused</small>
         </div>
       </div>
       <div class="player-controls">
