@@ -8,7 +8,10 @@ function formatTime(totalSeconds) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-export function createPlayer(songs, { onPlay, onPause, queue, modes, onModeChange }) {
+export function createPlayer(
+  songs,
+  { onPlay, onPause, queue, modes, onModeChange }
+) {
   const audio = document.getElementById("audio-player");
   const titleElement = document.querySelector(".now-playing-copy strong");
   const artistElement = document.querySelector(".now-playing-copy span");
@@ -206,6 +209,7 @@ export function createPlayer(songs, { onPlay, onPause, queue, modes, onModeChang
   }
 
   function chooseRandomSongId(songIds, excludedId) {
+    if (songIds.length === 1) return songIds[0];
     const candidates = songIds.filter((songId) => songId !== excludedId);
     if (candidates.length === 0) return null;
     return candidates[Math.floor(Math.random() * candidates.length)];
@@ -217,7 +221,10 @@ export function createPlayer(songs, { onPlay, onPause, queue, modes, onModeChang
       if (shuffleRemaining.length === 0) {
         shuffleRemaining = songs.map((song) => song.id);
       }
-      const nextId = chooseRandomSongId(shuffleRemaining, songs[currentSongIndex].id);
+      const nextId = chooseRandomSongId(
+        shuffleRemaining,
+        songs[currentSongIndex].id
+      );
       if (nextId === null) return songs[currentSongIndex].id;
       shuffleRemaining = shuffleRemaining.filter((songId) => songId !== nextId);
       return nextId;
@@ -234,11 +241,14 @@ export function createPlayer(songs, { onPlay, onPause, queue, modes, onModeChang
         queueCycle = [...currentQueueIds];
         queueCycleRemaining = [...currentQueueIds];
       }
-      if (queueCycleRemaining.length === 0) queueCycleRemaining = [...queueCycle];
+      if (queueCycleRemaining.length === 0)
+        queueCycleRemaining = [...queueCycle];
       const nextId = state.shuffle
         ? chooseRandomSongId(queueCycleRemaining, songs[currentSongIndex].id)
         : queueCycleRemaining[0];
-      queueCycleRemaining = queueCycleRemaining.filter((songId) => songId !== nextId);
+      queueCycleRemaining = queueCycleRemaining.filter(
+        (songId) => songId !== nextId
+      );
       return nextId;
     }
     const nextId = state.shuffle
@@ -326,8 +336,10 @@ export function createPlayer(songs, { onPlay, onPause, queue, modes, onModeChang
 
   const shuffleButton = document.querySelector(".shuffle-button");
   const repeatButton = document.querySelector(".repeat-button");
-  if (shuffleButton) shuffleButton.addEventListener("click", () => modes?.toggleShuffle());
-  if (repeatButton) repeatButton.addEventListener("click", () => modes?.cycleRepeat());
+  if (shuffleButton)
+    shuffleButton.addEventListener("click", () => modes?.toggleShuffle());
+  if (repeatButton)
+    repeatButton.addEventListener("click", () => modes?.cycleRepeat());
   modes?.subscribe(handleModeChange);
   handleModeChange(modes?.getState() || { shuffle: false, repeat: "off" });
 

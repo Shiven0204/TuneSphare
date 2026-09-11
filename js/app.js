@@ -44,9 +44,7 @@ function initApp() {
   const queue = createQueue(songs, {
     onChange: (queueIds) => ui.renderQueue(queueIds, getSongById),
   });
-  const modes = createPlaybackMode({
-    onChange: (state) => ui.updatePlaybackModes(state),
-  });
+  const modes = createPlaybackMode();
 
   function getViewSongs() {
     if (currentView === "liked") {

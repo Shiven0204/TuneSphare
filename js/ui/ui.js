@@ -218,12 +218,16 @@ export function createUI(songs) {
     const repeatButton = document.querySelector(".repeat-button");
     if (shuffleButton) {
       shuffleButton.setAttribute("aria-pressed", String(shuffle));
-      shuffleButton.setAttribute("aria-label", `Shuffle ${shuffle ? "on" : "off"}`);
+      shuffleButton.setAttribute(
+        "aria-label",
+        `Shuffle ${shuffle ? "on" : "off"}`
+      );
       shuffleButton.title = `Shuffle ${shuffle ? "on" : "off"}`;
       shuffleButton.classList.toggle("is-active", shuffle);
     }
     if (repeatButton) {
-      const repeatLabel = repeat === "all" ? "all" : repeat === "one" ? "one" : "off";
+      const repeatLabel =
+        repeat === "all" ? "all" : repeat === "one" ? "one" : "off";
       repeatButton.setAttribute("aria-pressed", String(repeat !== "off"));
       repeatButton.setAttribute("aria-label", `Repeat ${repeatLabel}`);
       repeatButton.title = `Repeat ${repeatLabel}`;

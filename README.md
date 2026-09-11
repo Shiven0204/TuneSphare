@@ -4,7 +4,7 @@ A modern local music web application built with HTML5, CSS3, and vanilla JavaScr
 
 ## Current Phase
 
-Stage A2.1 — Queue System
+Stage A2.2 — Shuffle + Repeat
 
 ## Technologies
 
@@ -28,6 +28,10 @@ Stage A2.1 — Queue System
 - Ordered up-next queue with add, remove, clear, and play-from-queue actions
 - Queue-aware Next button and automatic end-of-track playback
 - Persistent queue song IDs with invalid and duplicate entries removed on startup
+- Shuffle playback with bounded no-immediate-repeat cycles
+- Repeat Off, Repeat All, and Repeat One modes
+- Queue-aware mode selection without mutating the persisted queue order
+- Persisted playback modes with keyboard-accessible controls
 
 ## Stage A1 Accomplishments
 
@@ -47,8 +51,9 @@ js/
 ├── app.js            # Controlled application initialization & event handlers
 ├── data/songs.js     # Master song metadata and audio/cover source paths
 ├── player/player.js  # Audio player engine, volume, seek bar & playback
+├── player/playback-mode.js # Persisted Shuffle and Repeat mode state
 ├── search/search.js  # Pure function search and filtering logic
-├── storage/storage.js # LocalStorage read/write for liked/recent tracks
+├── storage/storage.js # LocalStorage read/write for library, queue, and modes
 ├── ui/ui.js           # Dynamic DOM rendering, targeted state updates & navigation
 └── queue/queue.js     # Ordered queue state and queue operations
 ```
@@ -71,11 +76,11 @@ Then open `http://localhost:8000` in your web browser.
 - **Phase 4** — LocalStorage & user library persistence
 - **Phase 5** — Native ES module architecture refactoring
 - **Stage A1** — Codebase cleanup, targeted DOM updates, seek-bar throttling & accessibility polish
+- **Stage A2.1** — Queue management
+- **Stage A2.2** — Shuffle and Repeat playback modes
 
 ## Future Roadmap
 
-- **Stage A2.1** — Queue management
-- **Stage A2.2** — Shuffle and Repeat modes
 - **Stage A3** — User-created custom playlists
 - **Stage B** — Web Audio API equalizer visualizer
 - **Stage C** — Backend / API integration & React migration

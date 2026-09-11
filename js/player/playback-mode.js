@@ -28,7 +28,8 @@ export function createPlaybackMode({ onChange } = {}) {
   }
 
   function cycleRepeat() {
-    repeat = REPEAT_MODES[(REPEAT_MODES.indexOf(repeat) + 1) % REPEAT_MODES.length];
+    repeat =
+      REPEAT_MODES[(REPEAT_MODES.indexOf(repeat) + 1) % REPEAT_MODES.length];
     saveRepeatMode(repeat);
     notify();
   }

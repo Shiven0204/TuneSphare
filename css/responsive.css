@@ -76,7 +76,9 @@
     width: 100%;
     max-width: none;
   }
-  .control-buttons { gap: 10px; }
+  .control-buttons {
+    gap: 10px;
+  }
   .player-options {
     grid-column: 2;
   }
