@@ -10,6 +10,7 @@ import { createPlayer } from "./player/player.js";
 import { createUI } from "./ui/ui.js";
 import { createQueue } from "./queue/queue.js";
 import { createPlaybackMode } from "./player/playback-mode.js";
+import { initializeKeyboardControls } from "./keyboard/keyboard.js";
 
 const MAX_RECENT_SONGS = 5;
 
@@ -157,6 +158,7 @@ function initApp() {
       ui.updateActiveSong(song ? song.id : null, false);
     },
   });
+  initializeKeyboardControls({ player, modes, ui });
 
   function addSongToQueue(songId) {
     const song = getSongById(songId);

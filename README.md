@@ -28,6 +28,9 @@ Stage A2.2 — Shuffle + Repeat
 - Ordered up-next queue with add, remove, clear, and play-from-queue actions
 - Queue-aware Next button and automatic end-of-track playback
 - Persistent queue song IDs with invalid and duplicate entries removed on startup
+- Global keyboard controls for playback, seeking, volume, Queue, Shuffle, and Repeat
+- Keyboard shortcut help dialog with focus restoration and text-input protection
+- A2.3 global shortcuts: Space, N/P, M, S, R, Q, Escape, seek, volume, Home, and End
 - Shuffle playback with bounded no-immediate-repeat cycles
 - Repeat Off, Repeat All, and Repeat One modes
 - Queue-aware mode selection without mutating the persisted queue order
@@ -52,6 +55,7 @@ js/
 ├── data/songs.js     # Master song metadata and audio/cover source paths
 ├── player/player.js  # Audio player engine, volume, seek bar & playback
 ├── player/playback-mode.js # Persisted Shuffle and Repeat mode state
+├── keyboard/keyboard.js # Centralized global shortcut handling and input guards
 ├── search/search.js  # Pure function search and filtering logic
 ├── storage/storage.js # LocalStorage read/write for library, queue, and modes
 ├── ui/ui.js           # Dynamic DOM rendering, targeted state updates & navigation
@@ -68,6 +72,24 @@ python -m http.server 8000
 
 Then open `http://localhost:8000` in your web browser.
 
+### A2.3 — Keyboard Controls
+
+Global shortcuts are available when focus is outside an input, select, textarea,
+editable element, link, button, or playback slider:
+
+- **Space** — Play / Pause
+- **N / P** — Next / Previous track
+- **M** — Mute / Unmute
+- **S / R** — Toggle Shuffle / cycle Repeat
+- **Q / Esc** — Focus Queue / close the active help overlay or return Queue focus
+- **Left / Right** — Seek backward / forward
+- **Up / Down** — Decrease / increase volume
+- **Home / End** — Seek to the start / end of the current track
+
+Modifier combinations remain available to the browser, repeated action keys are
+ignored, and the shortcut reference is available from the Keyboard shortcuts
+button. Existing touch and pointer controls remain available.
+
 ## Phase History
 
 - **Phase 1** — UI foundation & dashboard layout
@@ -78,6 +100,7 @@ Then open `http://localhost:8000` in your web browser.
 - **Stage A1** — Codebase cleanup, targeted DOM updates, seek-bar throttling & accessibility polish
 - **Stage A2.1** — Queue management
 - **Stage A2.2** — Shuffle and Repeat playback modes
+- **Stage A2.3** — Keyboard controls and global shortcuts
 
 ## Future Roadmap
 

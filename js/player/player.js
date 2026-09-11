@@ -176,29 +176,44 @@ export function createPlayer(
     updateProgress();
   }
 
+  function seekBy(seconds) {
+    if (!audio || !Number.isFinite(audio.duration)) return;
+    audio.currentTime = Math.min(
+      Math.max(audio.currentTime + seconds, 0),
+      audio.duration
+    );
+    updateProgress();
+  }
+
+  function seekTo(seconds) {
+    if (!audio || !Number.isFinite(audio.duration)) return;
+    audio.currentTime = Math.min(Math.max(seconds, 0), audio.duration);
+    updateProgress();
+  }
+
+  function seekToEnd() {
+    if (!audio || !Number.isFinite(audio.duration)) return;
+    seekTo(audio.duration);
+  }
+
   function handleKeyboardSeek(event) {
     if (!audio || !Number.isFinite(audio.duration)) return;
     const step = 5; // 5 seconds
-    let targetTime = audio.currentTime;
-
     if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
       event.preventDefault();
-      targetTime = Math.max(0, audio.currentTime - step);
+      seekBy(-step);
     } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
       event.preventDefault();
-      targetTime = Math.min(audio.duration, audio.currentTime + step);
+      seekBy(step);
     } else if (event.key === "Home") {
       event.preventDefault();
-      targetTime = 0;
+      seekTo(0);
     } else if (event.key === "End") {
       event.preventDefault();
-      targetTime = audio.duration;
+      seekTo(audio.duration);
     } else {
       return;
     }
-
-    audio.currentTime = targetTime;
-    updateProgress();
   }
 
   function rememberCurrentSong() {
@@ -301,6 +316,31 @@ export function createPlayer(
     loadSong((currentSongIndex - 1 + songs.length) % songs.length, isPlaying());
   }
 
+  function toggleMute() {
+    if (!audio) return;
+    if (audio.muted) {
+      audio.muted = false;
+      audio.volume = previousVolume || 0.68;
+    } else {
+      previousVolume = audio.volume || previousVolume;
+      audio.muted = true;
+      audio.volume = 0;
+    }
+    updateVolume();
+  }
+
+  function adjustVolume(amount) {
+    if (!audio) return;
+    const nextVolume = Math.min(
+      Math.max((audio.muted ? 0 : audio.volume) + amount, 0),
+      1
+    );
+    audio.volume = nextVolume;
+    audio.muted = nextVolume === 0;
+    if (nextVolume > 0) previousVolume = nextVolume;
+    updateVolume();
+  }
+
   function handleModeChange(state) {
     shuffleRemaining = [];
     queueCycle = [];
@@ -354,17 +394,7 @@ export function createPlayer(
   }
 
   if (volumeIcon && audio) {
-    volumeIcon.addEventListener("click", () => {
-      if (audio.muted) {
-        audio.muted = false;
-        audio.volume = previousVolume || 0.68;
-      } else {
-        previousVolume = audio.volume || previousVolume;
-        audio.muted = true;
-        audio.volume = 0;
-      }
-      updateVolume();
-    });
+    volumeIcon.addEventListener("click", toggleMute);
   }
 
   if (progressTrack) {
@@ -414,6 +444,13 @@ export function createPlayer(
     isPlaying,
     getCurrentSong: () => songs[currentSongIndex],
     getCurrentIndex: () => currentSongIndex,
+    nextTrack: goToNextSong,
+    previousTrack: goToPreviousSong,
+    seekBy,
+    seekTo,
+    seekToEnd,
+    adjustVolume,
+    toggleMute,
     getNextPlaybackTrack,
     playSongById: (songId) => {
       const song = queue?.playQueuedSong(songId);

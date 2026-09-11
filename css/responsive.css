@@ -29,6 +29,10 @@
   .menu-button {
     display: inline-grid;
   }
+  .topbar .shortcuts-button {
+    order: 4;
+    margin-left: auto;
+  }
   .menu-button {
     flex: 0 0 auto;
   }

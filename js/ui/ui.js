@@ -16,6 +16,12 @@ export function createUI(songs) {
   const libraryAllList = document.querySelector(".library-all-list");
   const searchInput = document.querySelector("#song-search");
   const navigationLinks = document.querySelectorAll(".nav-link");
+  const queuePanel = document.querySelector(".queue-panel");
+  const shortcutsButton = document.querySelector(".shortcuts-button");
+  const shortcutsDialog = document.querySelector(".shortcuts-dialog");
+  const shortcutsClose = document.querySelector(".shortcuts-close");
+  let queueReturnFocus = null;
+  let dialogReturnFocus = null;
 
   function createTrackRow(song, songIndex, likedSongIds, durationMap = {}) {
     const trackRow = document.createElement("article");
@@ -213,6 +219,54 @@ export function createUI(songs) {
     if (feedback) feedback.textContent = message;
   }
 
+  function focusQueue() {
+    if (!queuePanel) return;
+    queueReturnFocus = document.activeElement?.matches("body")
+      ? document.querySelector(".shortcuts-button")
+      : document.activeElement;
+    queuePanel.focus();
+  }
+
+  function closeQueue() {
+    if (!queuePanel?.contains(document.activeElement)) return false;
+    const returnTarget = queueReturnFocus;
+    queueReturnFocus = null;
+    returnTarget?.focus?.();
+    return true;
+  }
+
+  function openShortcutHelp() {
+    if (!shortcutsDialog) return;
+    dialogReturnFocus = document.activeElement;
+    if (!shortcutsDialog.open) shortcutsDialog.showModal();
+    shortcutsClose?.focus();
+  }
+
+  function closeShortcutHelp() {
+    if (!shortcutsDialog?.open) return false;
+    shortcutsDialog.close();
+    const returnTarget = dialogReturnFocus;
+    dialogReturnFocus = null;
+    returnTarget?.focus?.();
+    return true;
+  }
+
+  function closeOverlays() {
+    return closeShortcutHelp() || closeQueue();
+  }
+
+  shortcutsButton?.addEventListener("click", openShortcutHelp);
+  shortcutsClose?.addEventListener("click", closeShortcutHelp);
+  shortcutsDialog?.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeShortcutHelp();
+  });
+  shortcutsDialog?.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    closeShortcutHelp();
+  });
+
   function updatePlaybackModes({ shuffle, repeat }) {
     const shuffleButton = document.querySelector(".shuffle-button");
     const repeatButton = document.querySelector(".repeat-button");
@@ -281,6 +335,8 @@ export function createUI(songs) {
     renderQueue,
     showQueueFeedback,
     updatePlaybackModes,
+    focusQueue,
+    closeOverlays,
     updateActiveSong,
     showView,
     setActiveNavigation,
