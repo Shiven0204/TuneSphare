@@ -8,6 +8,8 @@ import {
 import { searchSongs } from "./search/search.js";
 import { createPlayer } from "./player/player.js";
 import { createUI } from "./ui/ui.js";
+import { createQueue } from "./queue/queue.js";
+import { createPlaybackMode } from "./player/playback-mode.js";
 
 const MAX_RECENT_SONGS = 5;
 
@@ -38,6 +40,13 @@ function initApp() {
   function getSongById(songId) {
     return songs.find((song) => song.id === songId);
   }
+
+  const queue = createQueue(songs, {
+    onChange: (queueIds) => ui.renderQueue(queueIds, getSongById),
+  });
+  const modes = createPlaybackMode({
+    onChange: (state) => ui.updatePlaybackModes(state),
+  });
 
   function getViewSongs() {
     if (currentView === "liked") {
@@ -138,6 +147,9 @@ function initApp() {
   }
 
   player = createPlayer(songs, {
+    queue,
+    modes,
+    onModeChange: (state) => ui.updatePlaybackModes(state),
     onPlay: (song) => {
       addToRecentlyPlayed(song.id);
       ui.updateActiveSong(song.id, true);
@@ -147,6 +159,20 @@ function initApp() {
       ui.updateActiveSong(song ? song.id : null, false);
     },
   });
+
+  function addSongToQueue(songId) {
+    const song = getSongById(songId);
+    if (!song) return;
+    if (player.getCurrentSong()?.id === songId) {
+      ui.showQueueFeedback("Currently playing");
+      return;
+    }
+    if (!queue.addToQueue(songId)) {
+      ui.showQueueFeedback("Already in queue");
+      return;
+    }
+    ui.showQueueFeedback(`${song.title} added to queue`);
+  }
 
   function handleTrackActivation(songId) {
     const targetSong = getSongById(songId);
@@ -184,6 +210,25 @@ function initApp() {
       return;
     }
 
+    const queueButton = event.target.closest(".queue-button");
+    if (queueButton) {
+      event.stopPropagation();
+      addSongToQueue(Number(queueButton.dataset.songId));
+      return;
+    }
+
+    const queueRemove = event.target.closest(".queue-remove");
+    if (queueRemove) {
+      queue.removeFromQueue(Number(queueRemove.dataset.queueSongId));
+      return;
+    }
+
+    const queueSong = event.target.closest(".queue-song");
+    if (queueSong) {
+      player.playSongById(Number(queueSong.dataset.queueSongId));
+      return;
+    }
+
     const trackPlayButton = event.target.closest(".track-play");
     if (trackPlayButton) {
       event.stopPropagation();
@@ -212,6 +257,9 @@ function initApp() {
   if (searchForm) {
     searchForm.addEventListener("submit", (event) => event.preventDefault());
   }
+  document
+    .querySelector(".clear-queue")
+    ?.addEventListener("click", () => queue.clearQueue());
 
   const sidebar = document.querySelector("#sidebar");
   const openButton = document.querySelector("[data-nav-open]");
@@ -244,6 +292,7 @@ function initApp() {
   });
 
   renderCurrentView();
+  ui.renderQueue(queue.getQueue(), getSongById);
 }
 
 if (document.readyState === "loading") {

@@ -4,7 +4,7 @@ A modern local music web application built with HTML5, CSS3, and vanilla JavaScr
 
 ## Current Phase
 
-Stage A1 — Codebase Cleanup & Interactive UX Polish
+Stage A2.1 — Queue System
 
 ## Technologies
 
@@ -25,6 +25,9 @@ Stage A1 — Codebase Cleanup & Interactive UX Polish
 - Real-time audio metadata duration loading
 - Like/unlike tracks with targeted in-place DOM updates
 - Persistent liked songs and recently played history in LocalStorage
+- Ordered up-next queue with add, remove, clear, and play-from-queue actions
+- Queue-aware Next button and automatic end-of-track playback
+- Persistent queue song IDs with invalid and duplicate entries removed on startup
 
 ## Stage A1 Accomplishments
 
@@ -46,7 +49,8 @@ js/
 ├── player/player.js  # Audio player engine, volume, seek bar & playback
 ├── search/search.js  # Pure function search and filtering logic
 ├── storage/storage.js # LocalStorage read/write for liked/recent tracks
-└── ui/ui.js          # Dynamic DOM rendering, targeted state updates & navigation
+├── ui/ui.js           # Dynamic DOM rendering, targeted state updates & navigation
+└── queue/queue.js     # Ordered queue state and queue operations
 ```
 
 ## How to Run Locally
@@ -70,7 +74,8 @@ Then open `http://localhost:8000` in your web browser.
 
 ## Future Roadmap
 
-- **Stage A2** — Queue management, Shuffle, and Repeat modes
+- **Stage A2.1** — Queue management
+- **Stage A2.2** — Shuffle and Repeat modes
 - **Stage A3** — User-created custom playlists
 - **Stage B** — Web Audio API equalizer visualizer
 - **Stage C** — Backend / API integration & React migration

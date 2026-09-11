@@ -87,18 +87,37 @@
         </header>
 
         <main class="main-content" id="home">
-          <section
-            class="content-section popular-section"
-            aria-labelledby="songs-title"
-          >
-            <div class="section-heading">
-              <div>
-                <span class="eyebrow">Available in the music folder</span>
-                <h2 id="songs-title">Songs</h2>
+          <div class="content-grid">
+            <section
+              class="content-section popular-section"
+              aria-labelledby="songs-title"
+            >
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Available in the music folder</span>
+                  <h2 id="songs-title">Songs</h2>
+                </div>
               </div>
-            </div>
-            <div class="track-list" aria-live="polite"></div>
-          </section>
+              <div class="track-list" aria-live="polite"></div>
+            </section>
+            <aside class="queue-panel" aria-labelledby="queue-title">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Up next</span>
+                  <h2 id="queue-title" class="queue-count">Queue (0)</h2>
+                </div>
+                <button
+                  class="text-button clear-queue"
+                  type="button"
+                  aria-label="Clear queue"
+                >
+                  Clear
+                </button>
+              </div>
+              <p class="queue-feedback" role="status" aria-live="polite"></p>
+              <div class="queue-list" aria-label="Up next"></div>
+            </aside>
+          </div>
           <section
             class="library-overview"
             id="library"
@@ -139,13 +158,14 @@
       </div>
       <div class="player-controls">
         <div class="control-buttons">
+          <button class="icon-button shuffle-button" type="button" aria-label="Shuffle off" aria-pressed="false" title="Shuffle off">⇄</button>
           <button class="icon-button" type="button" aria-label="Previous track">
             ◀◀</button
           ><button class="play-button" type="button" aria-label="Play track">
             ▶</button
           ><button class="icon-button" type="button" aria-label="Next track">
             ▶▶
-          </button>
+          </button><button class="icon-button repeat-button" type="button" aria-label="Repeat off" aria-pressed="false" data-repeat-mode="off" title="Repeat off">↻</button>
         </div>
         <div class="progress-row">
           <span class="time-current">0:00</span>

@@ -8,7 +8,7 @@ function formatTime(totalSeconds) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-export function createPlayer(songs, { onPlay, onPause }) {
+export function createPlayer(songs, { onPlay, onPause, queue, modes, onModeChange }) {
   const audio = document.getElementById("audio-player");
   const titleElement = document.querySelector(".now-playing-copy strong");
   const artistElement = document.querySelector(".now-playing-copy span");
@@ -32,6 +32,10 @@ export function createPlayer(songs, { onPlay, onPause }) {
   let isDraggingProgress = false;
   let dragFraction = 0;
   let rafId = null;
+  let shuffleRemaining = [];
+  let queueCycle = [];
+  let queueCycleRemaining = [];
+  let playbackHistory = [];
 
   function updateProgress() {
     if (!audio) return;
@@ -194,12 +198,104 @@ export function createPlayer(songs, { onPlay, onPause }) {
     updateProgress();
   }
 
+  function rememberCurrentSong() {
+    const currentSong = songs[currentSongIndex];
+    if (!currentSong || playbackHistory.at(-1) === currentSong.id) return;
+    playbackHistory.push(currentSong.id);
+    if (playbackHistory.length > 30) playbackHistory.shift();
+  }
+
+  function chooseRandomSongId(songIds, excludedId) {
+    const candidates = songIds.filter((songId) => songId !== excludedId);
+    if (candidates.length === 0) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  function getLibraryNextId() {
+    const state = modes?.getState() || { shuffle: false, repeat: "off" };
+    if (state.shuffle) {
+      if (shuffleRemaining.length === 0) {
+        shuffleRemaining = songs.map((song) => song.id);
+      }
+      const nextId = chooseRandomSongId(shuffleRemaining, songs[currentSongIndex].id);
+      if (nextId === null) return songs[currentSongIndex].id;
+      shuffleRemaining = shuffleRemaining.filter((songId) => songId !== nextId);
+      return nextId;
+    }
+    return songs[(currentSongIndex + 1) % songs.length].id;
+  }
+
+  function getQueueNextId(state) {
+    const queuedIds = queue?.getQueue() || [];
+    if (queuedIds.length === 0) return null;
+    if (state.repeat === "all") {
+      const currentQueueIds = queuedIds;
+      if (queueCycle.join() !== currentQueueIds.join()) {
+        queueCycle = [...currentQueueIds];
+        queueCycleRemaining = [...currentQueueIds];
+      }
+      if (queueCycleRemaining.length === 0) queueCycleRemaining = [...queueCycle];
+      const nextId = state.shuffle
+        ? chooseRandomSongId(queueCycleRemaining, songs[currentSongIndex].id)
+        : queueCycleRemaining[0];
+      queueCycleRemaining = queueCycleRemaining.filter((songId) => songId !== nextId);
+      return nextId;
+    }
+    const nextId = state.shuffle
+      ? chooseRandomSongId(queuedIds, songs[currentSongIndex].id)
+      : queuedIds[0];
+    return nextId;
+  }
+
+  function getNextPlaybackTrack({ automatic = false } = {}) {
+    const state = modes?.getState() || { shuffle: false, repeat: "off" };
+    if (automatic && state.repeat === "one") return songs[currentSongIndex];
+
+    const queueSongId = getQueueNextId(state);
+    if (queueSongId !== null) {
+      if (state.repeat !== "all") queue?.removeFromQueue(queueSongId);
+      return songs.find((song) => song.id === queueSongId) || null;
+    }
+
+    if (automatic && state.repeat === "off" && !state.shuffle) {
+      return songs[(currentSongIndex + 1) % songs.length];
+    }
+    return songs.find((song) => song.id === getLibraryNextId()) || null;
+  }
+
+  function playNext({ automatic = false } = {}) {
+    const nextSong = getNextPlaybackTrack({ automatic });
+    if (!nextSong) return;
+    rememberCurrentSong();
+    loadSong(songs.indexOf(nextSong), true);
+  }
+
   function goToNextSong() {
-    loadSong((currentSongIndex + 1) % songs.length, isPlaying());
+    playNext({ automatic: false });
+  }
+
+  function handleEnded() {
+    playNext({ automatic: true });
   }
 
   function goToPreviousSong() {
+    const state = modes?.getState() || { shuffle: false };
+    if (state.shuffle && playbackHistory.length > 0) {
+      const previousId = playbackHistory.pop();
+      const previousSong = songs.find((song) => song.id === previousId);
+      if (previousSong) {
+        loadSong(songs.indexOf(previousSong), true);
+        return;
+      }
+    }
     loadSong((currentSongIndex - 1 + songs.length) % songs.length, isPlaying());
+  }
+
+  function handleModeChange(state) {
+    shuffleRemaining = [];
+    queueCycle = [];
+    queueCycleRemaining = [];
+    onModeChange?.(state);
   }
 
   if (audio) {
@@ -215,7 +311,7 @@ export function createPlayer(songs, { onPlay, onPause }) {
     audio.addEventListener("loadedmetadata", updateProgress);
     audio.addEventListener("canplay", updateProgress);
     audio.addEventListener("timeupdate", updateProgress);
-    audio.addEventListener("ended", goToNextSong);
+    audio.addEventListener("ended", handleEnded);
   }
 
   if (playButton) {
@@ -227,6 +323,13 @@ export function createPlayer(songs, { onPlay, onPause }) {
   if (nextButton) {
     nextButton.addEventListener("click", goToNextSong);
   }
+
+  const shuffleButton = document.querySelector(".shuffle-button");
+  const repeatButton = document.querySelector(".repeat-button");
+  if (shuffleButton) shuffleButton.addEventListener("click", () => modes?.toggleShuffle());
+  if (repeatButton) repeatButton.addEventListener("click", () => modes?.cycleRepeat());
+  modes?.subscribe(handleModeChange);
+  handleModeChange(modes?.getState() || { shuffle: false, repeat: "off" });
 
   if (volumeSlider && audio) {
     volumeSlider.addEventListener("input", (event) => {
@@ -299,5 +402,12 @@ export function createPlayer(songs, { onPlay, onPause }) {
     isPlaying,
     getCurrentSong: () => songs[currentSongIndex],
     getCurrentIndex: () => currentSongIndex,
+    getNextPlaybackTrack,
+    playSongById: (songId) => {
+      const song = queue?.playQueuedSong(songId);
+      if (!song) return false;
+      loadSong(songs.indexOf(song), true);
+      return true;
+    },
   };
 }

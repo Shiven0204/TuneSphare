@@ -55,6 +55,13 @@
   .main-content {
     padding: 28px 22px 44px;
   }
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+  .queue-panel {
+    position: static;
+  }
   .player-bar {
     grid-template-columns: 1fr auto;
     gap: 8px 16px;
@@ -69,6 +76,7 @@
     width: 100%;
     max-width: none;
   }
+  .control-buttons { gap: 10px; }
   .player-options {
     grid-column: 2;
   }
@@ -91,7 +99,7 @@
     font-size: 20px;
   }
   .track-row {
-    grid-template-columns: 23px 40px minmax(0, 1fr) 32px 30px 30px;
+    grid-template-columns: 23px 40px minmax(0, 1fr) 32px 28px 28px 28px;
     gap: 9px;
   }
   .mini-art {

@@ -28,6 +28,7 @@ export function createUI(songs) {
     const trackMeta = document.createElement("span");
     const likeButton = document.createElement("button");
     const playButton = document.createElement("button");
+    const queueButton = document.createElement("button");
     const isLiked = likedSongIds.includes(song.id);
 
     trackRow.className = "track-row";
@@ -62,6 +63,11 @@ export function createUI(songs) {
     playButton.dataset.songId = String(song.id);
     playButton.setAttribute("aria-label", `Play ${song.title}`);
     playButton.textContent = "▶";
+    queueButton.className = "icon-button queue-button";
+    queueButton.type = "button";
+    queueButton.dataset.songId = String(song.id);
+    queueButton.setAttribute("aria-label", `Add ${song.title} to queue`);
+    queueButton.textContent = "+";
 
     trackRow.append(
       trackNumber,
@@ -69,7 +75,8 @@ export function createUI(songs) {
       trackInfo,
       trackMeta,
       likeButton,
-      playButton
+      playButton,
+      queueButton
     );
     return trackRow;
   }
@@ -158,6 +165,73 @@ export function createUI(songs) {
     });
   }
 
+  function renderQueue(queueSongs, getSongById) {
+    const queueList = document.querySelector(".queue-list");
+    const queueCount = document.querySelector(".queue-count");
+    if (!queueList) return;
+    queueList.replaceChildren();
+    if (queueCount) queueCount.textContent = `Queue (${queueSongs.length})`;
+    if (queueSongs.length === 0) {
+      const emptyState = document.createElement("p");
+      emptyState.className = "queue-empty";
+      emptyState.textContent =
+        "Your queue is empty. Add songs to play them next.";
+      queueList.append(emptyState);
+      return;
+    }
+    queueSongs.forEach((songId, index) => {
+      const song = getSongById(songId);
+      if (!song) return;
+      const item = document.createElement("article");
+      const songButton = document.createElement("button");
+      const removeButton = document.createElement("button");
+      item.className = "queue-item";
+      songButton.className = "queue-song";
+      songButton.type = "button";
+      songButton.dataset.queueSongId = String(song.id);
+      songButton.setAttribute("aria-label", `Play ${song.title} from queue`);
+      songButton.innerHTML = `<span class="queue-position">${
+        index + 1
+      }</span><span class="queue-copy"><strong></strong><span></span></span>`;
+      songButton.querySelector("strong").textContent = song.title;
+      songButton.querySelector(".queue-copy span").textContent = song.artist;
+      removeButton.className = "icon-button queue-remove";
+      removeButton.type = "button";
+      removeButton.dataset.queueSongId = String(song.id);
+      removeButton.setAttribute(
+        "aria-label",
+        `Remove ${song.title} from queue`
+      );
+      removeButton.textContent = "×";
+      item.append(songButton, removeButton);
+      queueList.append(item);
+    });
+  }
+
+  function showQueueFeedback(message) {
+    const feedback = document.querySelector(".queue-feedback");
+    if (feedback) feedback.textContent = message;
+  }
+
+  function updatePlaybackModes({ shuffle, repeat }) {
+    const shuffleButton = document.querySelector(".shuffle-button");
+    const repeatButton = document.querySelector(".repeat-button");
+    if (shuffleButton) {
+      shuffleButton.setAttribute("aria-pressed", String(shuffle));
+      shuffleButton.setAttribute("aria-label", `Shuffle ${shuffle ? "on" : "off"}`);
+      shuffleButton.title = `Shuffle ${shuffle ? "on" : "off"}`;
+      shuffleButton.classList.toggle("is-active", shuffle);
+    }
+    if (repeatButton) {
+      const repeatLabel = repeat === "all" ? "all" : repeat === "one" ? "one" : "off";
+      repeatButton.setAttribute("aria-pressed", String(repeat !== "off"));
+      repeatButton.setAttribute("aria-label", `Repeat ${repeatLabel}`);
+      repeatButton.title = `Repeat ${repeatLabel}`;
+      repeatButton.dataset.repeatMode = repeat;
+      repeatButton.classList.toggle("is-active", repeat !== "off");
+    }
+  }
+
   function updateActiveSong(currentSongId, isPlaying) {
     document.querySelectorAll(".track-row").forEach((row) => {
       const songId = Number(row.dataset.songId);
@@ -200,6 +274,9 @@ export function createUI(songs) {
     renderLibrary,
     updateTrackLikeState,
     updateTrackDurations,
+    renderQueue,
+    showQueueFeedback,
+    updatePlaybackModes,
     updateActiveSong,
     showView,
     setActiveNavigation,
