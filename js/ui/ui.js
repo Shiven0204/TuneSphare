@@ -1,5 +1,5 @@
 function getSongInitials(song) {
-  return song.title
+  return String(song.title || "Track")
     .split(" ")
     .map((word) => word[0])
     .join("")
@@ -10,10 +10,15 @@ function getSongInitials(song) {
 export function createUI(songs) {
   const mainSongSection = document.querySelector(".popular-section");
   const libraryOverview = document.querySelector(".library-overview");
-  const trackList = document.querySelector(".track-list");
+  const trackList = document.querySelector(".popular-section .track-list");
   const libraryLikedList = document.querySelector(".library-liked-list");
   const libraryRecentList = document.querySelector(".library-recent-list");
   const libraryAllList = document.querySelector(".library-all-list");
+  const homeDashboard = document.querySelector(".home-dashboard");
+  const homeRecentList = document.querySelector(".home-recent-list");
+  const homeTrendingList = document.querySelector(".home-trending-list");
+  const homeArtistsList = document.querySelector(".home-artists-list");
+  const homeGenresList = document.querySelector(".home-genres-list");
   const searchInput = document.querySelector("#song-search");
   const navigationLinks = document.querySelectorAll(".nav-link");
   const queuePanel = document.querySelector(".queue-panel");
@@ -24,7 +29,13 @@ export function createUI(songs) {
   let queueReturnFocus = null;
   let dialogReturnFocus = null;
 
-  function createTrackRow(song, songIndex, likedSongIds, durationMap = {}) {
+  function createTrackRow(
+    song,
+    songIndex,
+    likedSongIds,
+    durationMap = {},
+    { showAlbum = false } = {}
+  ) {
     const trackRow = document.createElement("article");
     const trackNumber = document.createElement("span");
     const miniArt = document.createElement("div");
@@ -33,26 +44,38 @@ export function createUI(songs) {
     const title = document.createElement("h3");
     const artist = document.createElement("p");
     const trackMeta = document.createElement("span");
+    const album = showAlbum ? document.createElement("span") : null;
     const likeButton = document.createElement("button");
     const playButton = document.createElement("button");
     const queueButton = document.createElement("button");
     const isLiked = likedSongIds.includes(song.id);
 
     trackRow.className = "track-row";
+    if (showAlbum) trackRow.classList.add("trending-row");
     trackRow.dataset.songId = String(song.id);
     trackRow.tabIndex = 0;
     trackNumber.className = "track-number";
     trackNumber.textContent = String(songIndex + 1).padStart(2, "0");
     miniArt.className = "mini-art";
-    miniArt.style.backgroundImage = `url('${song.cover}')`;
+    miniArt.style.backgroundImage = song.cover
+      ? `url('${song.cover}')`
+      : "none";
     miniArt.style.backgroundSize = "cover";
     miniArt.style.backgroundPosition = "center";
     artworkLabel.textContent = getSongInitials(song);
     miniArt.append(artworkLabel);
     trackInfo.className = "track-info";
-    title.textContent = song.title;
-    artist.textContent = song.artist;
+    title.textContent = song.title || "Unknown track";
+    artist.textContent = song.artist || "Unknown artist";
+    miniArt.setAttribute(
+      "aria-label",
+      `Album artwork for ${song.title || "Unknown track"}`
+    );
     trackInfo.append(title, artist);
+    if (album) {
+      album.className = "track-album";
+      album.textContent = song.album || "Unknown album";
+    }
     trackMeta.className = "track-meta";
     trackMeta.textContent = durationMap[song.id] || "--:--";
     likeButton.className = "icon-button like-button";
@@ -76,15 +99,9 @@ export function createUI(songs) {
     queueButton.setAttribute("aria-label", `Add ${song.title} to queue`);
     queueButton.textContent = "+";
 
-    trackRow.append(
-      trackNumber,
-      miniArt,
-      trackInfo,
-      trackMeta,
-      likeButton,
-      playButton,
-      queueButton
-    );
+    trackRow.append(trackNumber, miniArt, trackInfo);
+    if (album) trackRow.append(album);
+    trackRow.append(trackMeta, likeButton, playButton, queueButton);
     return trackRow;
   }
 
@@ -93,7 +110,8 @@ export function createUI(songs) {
     collection,
     emptyMessage,
     likedSongIds,
-    durationMap = {}
+    durationMap = {},
+    rowOptions = {}
   ) {
     if (!container) return;
     container.replaceChildren();
@@ -104,9 +122,15 @@ export function createUI(songs) {
       container.append(emptyState);
       return;
     }
-    collection.forEach((song) =>
+    collection.forEach((song, index) =>
       container.append(
-        createTrackRow(song, songs.indexOf(song), likedSongIds, durationMap)
+        createTrackRow(
+          song,
+          rowOptions.showAlbum ? index : songs.indexOf(song),
+          likedSongIds,
+          durationMap,
+          rowOptions
+        )
       )
     );
   }
@@ -143,6 +167,76 @@ export function createUI(songs) {
       likedSongIds,
       durationMap
     );
+  }
+
+  function renderHome(
+    { recent, trending, artists, genres },
+    likedSongIds,
+    durationMap
+  ) {
+    if (!homeDashboard) return;
+    renderCollection(
+      homeRecentList,
+      recent,
+      "No recently played tracks yet. Songs you play will appear here.",
+      likedSongIds,
+      durationMap
+    );
+    renderCollection(
+      homeTrendingList,
+      trending,
+      "No tracks are available yet.",
+      likedSongIds,
+      durationMap,
+      { showAlbum: true }
+    );
+    homeArtistsList.replaceChildren();
+    artists.forEach(({ name, score, trackCount, image }) => {
+      const button = document.createElement("button");
+      const avatar = document.createElement("span");
+      button.type = "button";
+      button.className = "artist-card";
+      button.dataset.homeFilter = name;
+      button.setAttribute("aria-label", `Browse songs by ${name}`);
+      avatar.className = "artist-avatar";
+      avatar.textContent = image;
+      button.append(avatar);
+      const copy = document.createElement("span");
+      copy.className = "artist-copy";
+      copy.innerHTML = "<strong></strong><small></small>";
+      copy.querySelector("strong").textContent = name;
+      copy.querySelector("small").textContent = `${trackCount} ${
+        trackCount === 1 ? "track" : "tracks"
+      } · ${score} score`;
+      button.append(copy);
+      homeArtistsList.append(button);
+    });
+    if (artists.length === 0) {
+      const emptyState = document.createElement("p");
+      emptyState.className = "empty-state";
+      emptyState.textContent = "Artists will appear when songs are available.";
+      homeArtistsList.append(emptyState);
+    }
+    homeGenresList.replaceChildren();
+    genres.forEach(({ name, trackCount }) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "genre-card";
+      button.dataset.homeFilter = name;
+      button.setAttribute("aria-label", `Browse ${name} songs`);
+      button.innerHTML = "<strong></strong><span></span>";
+      button.querySelector("strong").textContent = name;
+      button.querySelector("span").textContent = `${trackCount} ${
+        trackCount === 1 ? "track" : "tracks"
+      }`;
+      homeGenresList.append(button);
+    });
+    if (genres.length === 0) {
+      const emptyState = document.createElement("p");
+      emptyState.className = "empty-state";
+      emptyState.textContent = "Genres will appear when songs are available.";
+      homeGenresList.append(emptyState);
+    }
   }
 
   function updateTrackLikeState(songId, isLiked, songTitle = "") {
@@ -324,6 +418,7 @@ export function createUI(songs) {
     const isLibrary = view === "library";
     if (mainSongSection) mainSongSection.hidden = isLibrary;
     if (libraryOverview) libraryOverview.hidden = !isLibrary;
+    if (homeDashboard) homeDashboard.hidden = view !== "all";
   }
 
   function setActiveNavigation(activeLink) {
@@ -338,6 +433,7 @@ export function createUI(songs) {
     },
     renderSongs,
     renderLibrary,
+    renderHome,
     updateTrackLikeState,
     updateTrackDurations,
     renderQueue,

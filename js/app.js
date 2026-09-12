@@ -42,6 +42,59 @@ function initApp() {
     return songs.find((song) => song.id === songId);
   }
 
+  function getHomeData() {
+    const trending = [...songs]
+      .sort(
+        (first, second) => (second.popularity || 0) - (first.popularity || 0)
+      )
+      .slice(0, 8);
+    const artistMap = new Map();
+    const genreMap = new Map();
+    songs.forEach((song) => {
+      const artistName =
+        String(song.artist || "Unknown artist").trim() || "Unknown artist";
+      const genreName = String(song.genre || "Other").trim() || "Other";
+      const artist = artistMap.get(artistName) || {
+        name: artistName,
+        score: 0,
+        trackCount: 0,
+      };
+      artist.score += Number(song.popularity) || 0;
+      artist.trackCount += 1;
+      artistMap.set(artistName, artist);
+      const genre = genreMap.get(genreName) || {
+        name: genreName,
+        trackCount: 0,
+      };
+      genre.trackCount += 1;
+      genreMap.set(genreName, genre);
+    });
+    const artists = [...artistMap.values()]
+      .sort(
+        (first, second) =>
+          second.score - first.score || first.name.localeCompare(second.name)
+      )
+      .map((artist) => ({
+        ...artist,
+        image: artist.name
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((word) => word[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase(),
+      }));
+    const genres = [...genreMap.values()].sort((first, second) =>
+      first.name.localeCompare(second.name)
+    );
+    return {
+      recent: recentlyPlayedIds.map(getSongById).filter(Boolean),
+      trending,
+      artists,
+      genres,
+    };
+  }
+
   const queue = createQueue(songs, {
     onChange: (queueIds) => ui.renderQueue(queueIds, getSongById),
   });
@@ -98,6 +151,9 @@ function initApp() {
         durationMap
       );
     } else {
+      if (currentView === "all") {
+        ui.renderHome(getHomeData(), likedSongIds, durationMap);
+      }
       ui.renderSongs(
         visibleSongs,
         getCollectionMessage(currentView, hasSearchTerm),
@@ -144,6 +200,8 @@ function initApp() {
     if (currentView === "library" || currentView === "recent") {
       renderCurrentView();
     }
+    if (currentView === "all")
+      ui.renderHome(getHomeData(), likedSongIds, durationMap);
   }
 
   player = createPlayer(songs, {
@@ -209,6 +267,19 @@ function initApp() {
     if (likeButton) {
       event.stopPropagation();
       toggleLike(Number(likeButton.dataset.songId));
+      return;
+    }
+
+    const homeFilter = event.target.closest("[data-home-filter]");
+    if (homeFilter) {
+      const libraryLink = document.querySelector(
+        '.nav-link[data-view="library"]'
+      );
+      currentView = "library";
+      if (ui.searchInput)
+        ui.searchInput.value = homeFilter.dataset.homeFilter || "";
+      if (libraryLink) ui.setActiveNavigation(libraryLink);
+      renderCurrentView();
       return;
     }
 

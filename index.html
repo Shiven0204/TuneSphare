@@ -100,6 +100,51 @@
             aria-live="polite"
             aria-atomic="true"
           ></div>
+          <div class="home-dashboard">
+            <section
+              class="home-section"
+              id="recently-played"
+              aria-labelledby="recently-played-title"
+            >
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Your listening history</span>
+                  <h2 id="recently-played-title">Recently Played</h2>
+                </div>
+              </div>
+              <div class="track-list home-recent-list" aria-live="polite"></div>
+            </section>
+            <section class="home-section" aria-labelledby="trending-title">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Curated from your local library</span>
+                  <h2 id="trending-title">Trending Tracks</h2>
+                </div>
+              </div>
+              <div
+                class="track-list home-trending-list"
+                aria-live="polite"
+              ></div>
+            </section>
+            <section class="home-section" aria-labelledby="top-artists-title">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Across your collection</span>
+                  <h2 id="top-artists-title">Top Artists</h2>
+                </div>
+              </div>
+              <div class="artist-grid home-artists-list"></div>
+            </section>
+            <section class="home-section" aria-labelledby="genres-title">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow">Browse by sound</span>
+                  <h2 id="genres-title">Genres</h2>
+                </div>
+              </div>
+              <div class="genre-grid home-genres-list"></div>
+            </section>
+          </div>
           <div class="content-grid">
             <section
               class="content-section popular-section"

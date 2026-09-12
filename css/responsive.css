@@ -63,6 +63,15 @@
     grid-template-columns: 1fr;
     gap: 34px;
   }
+  .home-dashboard {
+    gap: 34px;
+  }
+  .trending-row {
+    grid-template-columns: 23px 40px minmax(0, 1fr) 34px 28px 28px 28px;
+  }
+  .trending-row .track-album {
+    display: none;
+  }
   .queue-panel {
     position: static;
   }
@@ -114,6 +123,12 @@
   }
   .track-meta {
     font-size: 10px;
+  }
+  .artist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .genre-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .player-bar {
     padding-right: 14px;

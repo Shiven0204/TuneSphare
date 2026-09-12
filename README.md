@@ -4,7 +4,7 @@ A modern local music web application built with HTML5, CSS3, and vanilla JavaScr
 
 ## Current Phase
 
-Stage A2.4 — Advanced Player UX
+Stage A2.5 — Home Page Expansion
 
 ## Technologies
 
@@ -42,6 +42,16 @@ Stage A2.4 — Advanced Player UX
 - A2.4 polished Now Playing state with loading, buffering, and playback-error feedback
 - Stable album artwork fallback, synchronized time/progress, and improved volume/mute UX
 - Targeted like/queue status feedback with reduced-motion-aware state animation
+
+### A2.5 — Home Page Expansion
+
+The Home dashboard now includes LocalStorage-backed Recently Played tracks,
+curated Trending Tracks from explicit song popularity metadata, and derived Top
+Artists and Genres. Artist and genre cards reuse
+the existing library search flow, while all track actions continue to use the
+single player, queue, and like systems. The expanded Home page is responsive at
+desktop, tablet, and mobile widths with semantic controls, live states, artwork
+fallbacks, keyboard focus support, and accessible labels.
 
 ## Stage A1 Accomplishments
 
@@ -119,7 +129,7 @@ usable at desktop, tablet, and mobile widths, with reduced-motion support.
 - **Stage A2.2** — Shuffle and Repeat playback modes
 - **Stage A2.3** — Keyboard controls and global shortcuts
 - **Stage A2.4** — Advanced Player UX and final Vanilla JavaScript polish
-- **Stage A2.4** — Advanced Player UX and final Vanilla JavaScript polish
+- **Stage A2.5** — Home Page Expansion, derived discovery sections, responsive footer, and accessibility polish
 
 ## Future Roadmap
 

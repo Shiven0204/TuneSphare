@@ -307,6 +307,107 @@ h1 {
   gap: 42px;
   align-items: start;
 }
+.home-dashboard {
+  display: grid;
+  gap: 42px;
+  margin-bottom: 46px;
+}
+.home-section {
+  min-width: 0;
+  scroll-margin-top: 18px;
+}
+.home-dashboard[hidden] {
+  display: none;
+}
+.trending-row {
+  grid-template-columns: 32px 46px minmax(0, 1.2fr) minmax(100px, 0.8fr) 45px 34px 30px 30px;
+}
+.track-album {
+  overflow: hidden;
+  color: var(--color-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.artist-grid,
+.genre-grid {
+  display: grid;
+  gap: 14px;
+}
+.artist-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.genre-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.artist-card,
+.genre-card {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.artist-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+.artist-card:hover,
+.genre-card:hover {
+  border-color: var(--color-accent);
+  background: var(--color-surface-raised);
+  transform: translateY(-2px);
+}
+.artist-avatar {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent-deep), #0f766e);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.artist-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.artist-copy strong,
+.artist-copy small,
+.genre-card strong,
+.genre-card span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.artist-copy strong,
+.genre-card strong {
+  font-size: 13px;
+}
+.artist-copy small,
+.genre-card span {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+.genre-card {
+  display: grid;
+  min-height: 82px;
+  align-content: center;
+  gap: 7px;
+  padding: 16px;
+  background: linear-gradient(
+    135deg,
+    var(--color-surface),
+    var(--color-surface-soft)
+  );
+}
 
 .content-section {
   margin-top: 24px;
