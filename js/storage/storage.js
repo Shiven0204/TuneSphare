@@ -1,10 +1,43 @@
 const STORAGE_KEYS = Object.freeze({
+  likedSongs: "tunesphare-liked-songs",
+  recentlyPlayed: "tunesphare-recently-played",
+  queue: "tunesphare-queue",
+  shuffle: "tunesphare-shuffle",
+  repeatMode: "tunesphare-repeat-mode",
+});
+
+const LEGACY_STORAGE_KEYS = Object.freeze({
   likedSongs: "echoverse-liked-songs",
   recentlyPlayed: "echoverse-recently-played",
   queue: "echoverse-queue",
   shuffle: "echoverse-shuffle",
   repeatMode: "echoverse-repeat-mode",
 });
+
+const STORAGE_MIGRATION_KEY = "tunesphare-storage-migrated";
+
+function migrateLegacyStorage() {
+  try {
+    if (localStorage.getItem(STORAGE_MIGRATION_KEY) === "1") return;
+
+    Object.keys(STORAGE_KEYS).forEach((storageName) => {
+      const newKey = STORAGE_KEYS[storageName];
+      const oldKey = LEGACY_STORAGE_KEYS[storageName];
+      const newValue = localStorage.getItem(newKey);
+      const oldValue = localStorage.getItem(oldKey);
+
+      if (newValue === null && oldValue !== null) {
+        localStorage.setItem(newKey, oldValue);
+      }
+    });
+
+    localStorage.setItem(STORAGE_MIGRATION_KEY, "1");
+  } catch (error) {
+    // Storage can be unavailable or restricted in the current browser context.
+  }
+}
+
+migrateLegacyStorage();
 
 function readIds(storageKey) {
   try {

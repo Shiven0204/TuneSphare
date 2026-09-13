@@ -1,6 +1,9 @@
-# EchoVerse
+# TuneSphare
 
 A modern local music web application built with HTML5, CSS3, and vanilla JavaScript.
+
+The project was renamed from EchoVerse to TuneSphare. Existing LocalStorage data
+is migrated automatically to the new TuneSphare storage namespace.
 
 ## Current Phase
 
@@ -81,7 +84,7 @@ js/
 
 ## How to Run Locally
 
-Run EchoVerse through a local HTTP development server because ES modules require standard HTTP origin context:
+Run TuneSphare through a local HTTP development server because ES modules require standard HTTP origin context:
 
 ```bash
 python -m http.server 8000
