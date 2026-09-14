@@ -1,19 +1,22 @@
 :root {
-  --color-bg: #121518;
-  --color-surface: #191c21;
-  --color-surface-raised: #252a32;
-  --color-surface-soft: #1f2329;
-  --color-accent: #6366f1;
-  --color-accent-deep: #4f46e5;
-  --color-accent-soft: #818cf8;
-  --color-text: #f3f4f6;
-  --color-muted: #9ca3af;
-  --color-subtle: #6b7280;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-bg: #080608;
+  --color-surface: #151013;
+  --color-surface-raised: #241416;
+  --color-surface-soft: #1c1113;
+  --color-accent: #512526;
+  --color-accent-deep: #3c1a1b;
+  --color-accent-soft: #c3bdbd;
+  --color-text: #fefefe;
+  --color-muted: #d7d4d4;
+  --color-subtle: #c3bdbd;
+  --color-border: rgba(215, 212, 212, 0.16);
+  --color-player: #0f0b0d;
+  --color-progress-track: #302326;
+  --color-focus: #d7d4d4;
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 28px;
-  --shadow-card: 0 20px 40px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 20px 40px rgba(8, 6, 8, 0.42);
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -23,6 +26,24 @@
   --space-8: 32px;
   --sidebar-width: 248px;
   --player-height: 88px;
+}
+
+:root[data-theme="light"] {
+  --color-bg: #fefefe;
+  --color-surface: #d7d4d4;
+  --color-surface-raised: #c3bdbd;
+  --color-surface-soft: #ebe9e9;
+  --color-accent: #512526;
+  --color-accent-deep: #3c1a1b;
+  --color-accent-soft: #512526;
+  --color-text: #080608;
+  --color-muted: #512526;
+  --color-subtle: #6d5b5c;
+  --color-border: rgba(81, 37, 38, 0.2);
+  --color-player: #c3bdbd;
+  --color-progress-track: #a69d9d;
+  --color-focus: #080608;
+  --shadow-card: 0 20px 40px rgba(81, 37, 38, 0.16);
 }
 
 * {
@@ -60,7 +81,7 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 div:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-focus);
   outline-offset: 3px;
 }
 .sr-only {
@@ -112,11 +133,11 @@ div:focus-visible {
   place-items: center;
   border-radius: 9px;
   background: var(--color-accent);
-  color: #ffffff;
+  color: #fefefe;
   font-size: 10px;
   font-weight: 900;
   letter-spacing: -1px;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(81, 37, 38, 0.35);
 }
 .primary-nav {
   display: flex;
@@ -191,7 +212,7 @@ div:focus-visible {
   margin-top: 5px;
   border-radius: 50%;
   background: var(--color-accent);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 4px rgba(81, 37, 38, 0.2);
 }
 .sidebar-close,
 .menu-button {
@@ -223,6 +244,30 @@ div:focus-visible {
   border: 1px solid currentColor;
   border-radius: 50%;
   font-weight: 700;
+}
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-size: 11px;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease,
+    transform 0.2s ease;
+}
+.theme-toggle:hover {
+  border-color: var(--color-accent);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  transform: translateY(-1px);
+}
+.theme-toggle-icon {
+  color: var(--color-accent-soft);
+  font-size: 16px;
+  line-height: 1;
 }
 
 .page-area {
@@ -369,8 +414,12 @@ h1 {
   height: 42px;
   place-items: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent-deep), #0f766e);
-  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-accent-deep)
+  );
+  color: #fefefe;
   font-size: 12px;
   font-weight: 800;
 }
@@ -675,8 +724,8 @@ h1 {
   min-height: var(--player-height);
   padding: 12px 27px;
   border-top: 1px solid var(--color-border);
-  background: #16191d;
-  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.4);
+  background: var(--color-player);
+  box-shadow: 0 -10px 28px rgba(8, 6, 8, 0.32);
 }
 .now-playing,
 .player-controls,
@@ -765,10 +814,10 @@ h1 {
   place-items: center;
   border-radius: 50%;
   background: var(--color-accent);
-  color: #ffffff;
+  color: #fefefe;
   font-size: 12px;
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 14px rgba(81, 37, 38, 0.42);
 }
 .play-button:hover {
   background: var(--color-accent-deep);
@@ -787,7 +836,7 @@ h1 {
   height: 5px;
   overflow: hidden;
   border-radius: 4px;
-  background: #2b3036;
+  background: var(--color-progress-track);
   cursor: pointer;
   transition: height 0.15s ease;
 }

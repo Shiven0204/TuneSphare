@@ -13,6 +13,43 @@ import { createPlaybackMode } from "./player/playback-mode.js";
 import { initializeKeyboardControls } from "./keyboard/keyboard.js";
 
 const MAX_RECENT_SONGS = 5;
+const THEME_STORAGE_KEY = "tunesphare-theme";
+
+function initializeTheme() {
+  const root = document.documentElement;
+  const themeToggle = document.querySelector(".theme-toggle");
+  const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  const initialTheme = storedTheme === "light" ? "light" : "dark";
+
+  function setTheme(theme) {
+    const isLight = theme === "light";
+    root.dataset.theme = theme;
+    themeToggle?.setAttribute("aria-pressed", String(isLight));
+    themeToggle?.setAttribute(
+      "aria-label",
+      isLight ? "Switch to dark theme" : "Switch to light theme"
+    );
+    themeToggle?.setAttribute(
+      "title",
+      isLight ? "Use dark theme" : "Use light theme"
+    );
+    if (themeToggle) {
+      themeToggle.querySelector(".theme-toggle-icon").textContent = isLight
+        ? "◐"
+        : "☼";
+      themeToggle.querySelector(".theme-toggle-label").textContent = isLight
+        ? "Dark"
+        : "Light";
+    }
+  }
+
+  setTheme(initialTheme);
+  themeToggle?.addEventListener("click", () => {
+    const nextTheme = root.dataset.theme === "light" ? "dark" : "light";
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    setTheme(nextTheme);
+  });
+}
 
 function formatTime(totalSeconds) {
   if (!Number.isFinite(totalSeconds) || totalSeconds < 0) {
@@ -24,6 +61,7 @@ function formatTime(totalSeconds) {
 }
 
 function initApp() {
+  initializeTheme();
   let currentView = "all";
   let likedSongIds = getValidSongIds(getLikedSongs());
   let recentlyPlayedIds = getValidSongIds(getRecentlyPlayed());
