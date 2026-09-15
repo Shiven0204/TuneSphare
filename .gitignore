@@ -8,3 +8,5 @@ Thumbs.db
 
 # Generated files
 *.log
+node_modules/
+dist/

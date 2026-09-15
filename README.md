@@ -1,19 +1,22 @@
 # TuneSphare
 
-A modern local music web application built with HTML5, CSS3, and vanilla JavaScript.
+A modern local music web application built with React, Vite, HTML5, CSS3, and
+vanilla JavaScript.
 
 The project was renamed from EchoVerse to TuneSphare. Existing LocalStorage data
 is migrated automatically to the new TuneSphare storage namespace.
 
 ## Current Phase
 
-Stage A2.5 — Home Page Expansion
+React foundation migration — Vanilla implementation preserved
 
 ## Technologies
 
 - HTML5
 - CSS3 (Vanilla design tokens, flexbox & CSS grid)
 - JavaScript (Native ES Modules)
+- React
+- Vite
 - HTML5 Audio API
 - LocalStorage
 
@@ -84,13 +87,23 @@ js/
 
 ## How to Run Locally
 
-Run TuneSphare through a local HTTP development server because ES modules require standard HTTP origin context:
+Install dependencies and start the Vite development server:
 
 ```bash
-python -m http.server 8000
+npm install
+npm run dev
 ```
 
-Then open `http://localhost:8000` in your web browser.
+Build the React foundation for production with:
+
+```bash
+npm run build
+```
+
+The existing Vanilla implementation remains in `index.html`, `css/`, and
+`js/` as the migration reference. React currently mounts a minimal foundation
+from `src/main.jsx` and `src/App.jsx`; feature migration will happen in later
+phases.
 
 ### A2.3 — Keyboard Controls
 
