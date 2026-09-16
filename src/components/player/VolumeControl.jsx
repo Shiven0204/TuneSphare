@@ -7,7 +7,7 @@ function VolumeControl() {
     const displayedVolume = isMuted ? 0 : Math.round(volume * 100);
 
     return (
-        <div className="player-options">
+        <div className="volume-control">
             <button className="volume-icon" type="button" onClick={toggleMute} aria-label={isMuted || volume === 0 ? "Unmute" : "Mute"}>
                 <span aria-hidden="true">{isMuted || volume === 0 ? "🔇" : "🔊"}</span>
             </button>

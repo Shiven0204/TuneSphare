@@ -3,8 +3,9 @@ import NowPlaying from "./NowPlaying.jsx";
 import PlayerControls from "./PlayerControls.jsx";
 import ProgressBar from "./ProgressBar.jsx";
 import VolumeControl from "./VolumeControl.jsx";
+import QueueToggle from "../queue/QueueToggle.jsx";
 
-function MusicPlayer() {
+function MusicPlayer({ onOpenQueue }) {
     const { playbackState } = usePlayer();
 
     return (
@@ -14,7 +15,10 @@ function MusicPlayer() {
                 <PlayerControls />
                 <ProgressBar />
             </div>
-            <VolumeControl />
+            <div className="player-options">
+                <VolumeControl />
+                <QueueToggle onOpen={onOpenQueue} />
+            </div>
         </footer>
     );
 }

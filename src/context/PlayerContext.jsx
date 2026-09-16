@@ -1,12 +1,18 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { usePlaybackMode } from "./PlaybackModeContext.jsx";
+import { useQueue } from "./QueueContext.jsx";
 
 const PlayerContext = createContext(null);
 const DEFAULT_VOLUME = 0.68;
+const MAX_HISTORY = 30;
 
 function PlayerProvider({ songs, children }) {
     const audioRef = useRef(null);
     const nextAutoplayRef = useRef(false);
     const previousVolumeRef = useRef(DEFAULT_VOLUME);
+    const historyRef = useRef([]);
+    const { queueIds, removeFromQueue } = useQueue();
+    const { shuffle, repeat } = usePlaybackMode();
     const [currentSong, setCurrentSong] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -40,9 +46,7 @@ function PlayerProvider({ songs, children }) {
             });
         }
 
-        return () => {
-            audio.pause();
-        };
+        return () => audio.pause();
     }, [currentSong]);
 
     useEffect(() => {
@@ -52,19 +56,31 @@ function PlayerProvider({ songs, children }) {
         audio.muted = isMuted;
     }, [isMuted, volume]);
 
-    function playSong(song) {
-        const index = songs.findIndex((candidate) => candidate.id === song?.id);
-        if (index === -1) return;
+    function rememberCurrentSong() {
+        if (!currentSong) return;
+        historyRef.current = [
+            currentSong.id,
+            ...historyRef.current.filter((songId) => songId !== currentSong.id),
+        ].slice(0, MAX_HISTORY);
+    }
 
-        if (currentSong?.id === song.id) {
-            nextAutoplayRef.current = true;
-            audioRef.current?.play().catch(() => { });
+    function transitionToSong(song, shouldPlay = true, { fromQueue = false, remember = true } = {}) {
+        if (!song) return;
+        if (remember && currentSong?.id !== song.id) rememberCurrentSong();
+        if (fromQueue) removeFromQueue(song.id);
+        nextAutoplayRef.current = shouldPlay;
+        setCurrentIndex(songs.findIndex((candidate) => candidate.id === song.id));
+        setCurrentSong(song);
+    }
+
+    function playSong(song, options = {}) {
+        const validSong = songs.find((candidate) => candidate.id === song?.id);
+        if (!validSong) return;
+        if (currentSong?.id === validSong.id) {
+            play();
             return;
         }
-
-        nextAutoplayRef.current = true;
-        setCurrentIndex(index);
-        setCurrentSong(songs[index]);
+        transitionToSong(validSong, true, options);
     }
 
     function play() {
@@ -91,21 +107,50 @@ function PlayerProvider({ songs, children }) {
         else pause();
     }
 
-    function moveToSong(index, shouldPlay = true) {
-        if (!songs.length) return;
-        const nextIndex = (index + songs.length) % songs.length;
-        nextAutoplayRef.current = shouldPlay;
-        setCurrentIndex(nextIndex);
-        setCurrentSong(songs[nextIndex]);
+    function chooseRandomSong() {
+        const candidates = songs.filter((song) => song.id !== currentSong?.id);
+        return candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : currentSong;
     }
 
-    function next() {
-        moveToSong(currentIndex < 0 ? 0 : currentIndex + 1);
+    function chooseLibraryNext() {
+        if (shuffle) return chooseRandomSong();
+        return songs[(currentIndex + 1) % songs.length] || null;
+    }
+
+    function next({ automatic = false } = {}) {
+        // Queue items are upcoming tracks; once consumed, repeat/shuffle govern the library.
+        const queuedSong = songs.find((song) => song.id === queueIds[0]);
+        if (queuedSong) {
+            transitionToSong(queuedSong, true, { fromQueue: true });
+            return;
+        }
+
+        if (!songs.length || currentIndex < 0) return;
+        if (automatic && repeat === "one") {
+            const audio = audioRef.current;
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(() => { });
+            }
+            return;
+        }
+        if (automatic && repeat === "off" && !shuffle && currentIndex === songs.length - 1) {
+            setIsPlaying(false);
+            setPlaybackState("paused");
+            return;
+        }
+        transitionToSong(chooseLibraryNext(), true);
     }
 
     function previous() {
-        if (currentIndex < 0) return;
-        moveToSong(currentIndex - 1, true);
+        const previousId = historyRef.current.shift();
+        const previousSong = songs.find((song) => song.id === previousId);
+        if (previousSong) {
+            transitionToSong(previousSong, true, { remember: false });
+            return;
+        }
+        const previousIndex = (currentIndex - 1 + songs.length) % songs.length;
+        transitionToSong(songs[previousIndex], true, { remember: false });
     }
 
     function seek(time) {
@@ -125,13 +170,16 @@ function PlayerProvider({ songs, children }) {
 
     function toggleMute() {
         if (isMuted || volume === 0) {
-            const restoredVolume = previousVolumeRef.current || DEFAULT_VOLUME;
-            setVolumeState(restoredVolume);
+            setVolumeState(previousVolumeRef.current || DEFAULT_VOLUME);
             setIsMuted(false);
             return;
         }
         previousVolumeRef.current = volume;
         setIsMuted(true);
+    }
+
+    function handleEnded() {
+        next({ automatic: true });
     }
 
     function handleTimeUpdate(event) {
@@ -153,10 +201,6 @@ function PlayerProvider({ songs, children }) {
     function handlePause() {
         setIsPlaying(false);
         setPlaybackState((state) => (state === "error" ? state : "paused"));
-    }
-
-    function handleEnded() {
-        moveToSong(currentIndex + 1, true);
     }
 
     function handleWaiting() {
