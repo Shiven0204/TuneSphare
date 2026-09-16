@@ -348,6 +348,10 @@ h1 {
   padding-top: 10px;
 }
 
+.library-section + .library-section {
+  margin-top: 48px;
+}
+
 .home-library-heading {
   display: flex;
   align-items: end;
@@ -362,6 +366,20 @@ h1 {
   letter-spacing: -1px;
 }
 
+.section-heading-react {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.section-heading-react h2 {
+  margin-top: 7px;
+  font-size: 22px;
+  letter-spacing: -0.6px;
+}
+
 .song-count {
   flex: 0 0 auto;
   color: var(--color-subtle);
@@ -374,7 +392,7 @@ h1 {
 
 .song-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px;
+  grid-template-columns: minmax(0, 1fr) 34px 34px;
   align-items: center;
   gap: 8px;
   width: 100%;
@@ -438,6 +456,26 @@ h1 {
 .queue-button:disabled {
   color: var(--color-accent-soft);
   cursor: default;
+}
+
+.like-button {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 19px;
+}
+
+.like-button:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+
+.like-button.is-liked {
+  color: #f43f5e;
 }
 
 .song-row-number {
@@ -942,7 +980,7 @@ h1 {
   }
 
   .song-row {
-    grid-template-columns: minmax(0, 1fr) 34px;
+    grid-template-columns: minmax(0, 1fr) 34px 34px;
   }
 
   .song-row-main {
@@ -1020,7 +1058,7 @@ h1 {
   }
 
   .song-row {
-    grid-template-columns: minmax(0, 1fr) 34px;
+    grid-template-columns: minmax(0, 1fr) 34px 34px;
   }
 
   .song-row-main {
@@ -1100,7 +1138,7 @@ h1 {
   }
 
   .song-row {
-    grid-template-columns: minmax(0, 1fr) 30px;
+    grid-template-columns: minmax(0, 1fr) 30px 30px;
   }
 
   .song-row-main {

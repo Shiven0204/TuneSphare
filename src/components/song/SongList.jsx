@@ -1,10 +1,10 @@
 import SongRow from "./SongRow.jsx";
 
-function SongList({ songs = [] }) {
+function SongList({ songs = [], emptyMessage = "No songs are available in the library yet." }) {
     if (songs.length === 0) {
         return (
             <p className="song-list-empty" role="status">
-                No songs are available in the library yet.
+                {emptyMessage}
             </p>
         );
     }

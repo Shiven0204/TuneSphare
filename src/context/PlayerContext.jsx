@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { usePlaybackMode } from "./PlaybackModeContext.jsx";
 import { useQueue } from "./QueueContext.jsx";
+import { useRecentlyPlayed } from "./RecentlyPlayedContext.jsx";
 
 const PlayerContext = createContext(null);
 const DEFAULT_VOLUME = 0.68;
@@ -13,6 +14,7 @@ function PlayerProvider({ songs, children }) {
     const historyRef = useRef([]);
     const { queueIds, removeFromQueue } = useQueue();
     const { shuffle, repeat } = usePlaybackMode();
+    const { addRecentlyPlayed } = useRecentlyPlayed();
     const [currentSong, setCurrentSong] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -196,6 +198,7 @@ function PlayerProvider({ songs, children }) {
         setIsPlaying(true);
         setPlaybackState("playing");
         setError("");
+        if (currentSong) addRecentlyPlayed(currentSong.id);
     }
 
     function handlePause() {

@@ -1,5 +1,6 @@
 import { usePlayer } from "../../context/PlayerContext.jsx";
 import QueueButton from "../queue/QueueButton.jsx";
+import LikeButton from "./LikeButton.jsx";
 
 function SongRow({ song, index }) {
     const { currentSong, isPlaying, playSong, togglePlay } = usePlayer();
@@ -45,6 +46,7 @@ function SongRow({ song, index }) {
                 <span className="song-row-album">{song.album || "Album unavailable"}</span>
                 <span className="song-row-genre">{song.genre || "Genre unavailable"}</span>
             </button>
+            <LikeButton song={song} />
             <QueueButton song={song} />
         </article>
     );
