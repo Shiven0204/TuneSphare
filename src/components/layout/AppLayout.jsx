@@ -2,7 +2,7 @@ import { useState } from "react";
 import MobileNav from "./MobileNav.jsx";
 import Sidebar from "./Sidebar.jsx";
 import TopBar from "./TopBar.jsx";
-import PlayerPlaceholder from "../player/PlayerPlaceholder.jsx";
+import MusicPlayer from "../player/MusicPlayer.jsx";
 
 function AppLayout({ children }) {
     const [isNavigationOpen, setIsNavigationOpen] = useState(false);
@@ -16,7 +16,7 @@ function AppLayout({ children }) {
                 <TopBar onMenuOpen={() => setIsNavigationOpen(true)} />
                 <main className="main-content">{children}</main>
             </div>
-            <PlayerPlaceholder />
+            <MusicPlayer />
         </div>
     );
 }

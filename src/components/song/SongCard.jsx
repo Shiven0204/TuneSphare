@@ -1,6 +1,20 @@
+import { usePlayer } from "../../context/PlayerContext.jsx";
+
 function SongCard({ song }) {
+    const { currentSong, isPlaying, playSong, togglePlay } = usePlayer();
+    const isActive = currentSong?.id === song.id;
+    const handleSelect = () => {
+        if (isActive) togglePlay();
+        else playSong(song);
+    };
+
     return (
-        <article className="song-card">
+        <button
+            className={`song-card${isActive ? " active-song" : ""}`}
+            type="button"
+            onClick={handleSelect}
+            aria-label={`${isActive && isPlaying ? "Pause" : "Play"} ${song.title}`}
+        >
             <div className="song-card-artwork">
                 {song.cover ? (
                     <>
@@ -23,7 +37,7 @@ function SongCard({ song }) {
                 <p>{song.artist}</p>
                 <span>{song.album || song.genre || "Album unavailable"}</span>
             </div>
-        </article>
+        </button>
     );
 }
 
