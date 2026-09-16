@@ -1,9 +1,12 @@
+import AppLayout from "./components/layout/AppLayout.jsx";
+import Home from "./pages/Home.jsx";
+import "./styles/layout.css";
+
 function App() {
     return (
-        <main>
-            <h1>TuneSphare</h1>
-            <p>React migration in progress</p>
-        </main>
+        <AppLayout>
+            <Home />
+        </AppLayout>
     );
 }
 
