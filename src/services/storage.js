@@ -3,6 +3,12 @@ const STORAGE_KEYS = Object.freeze({
   recentlyPlayed: "tunesphare-recently-played",
 });
 
+const LEGACY_NUMERIC_IDS = Object.freeze({
+  1: "barsaat",
+  2: "bairan",
+  3: "tu-zaroori",
+});
+
 function getStoredData(key, fallback = null) {
   try {
     const storedValue = window.localStorage.getItem(key);
@@ -37,8 +43,8 @@ function getStoredSongIds(key, songs) {
   if (!Array.isArray(storedIds)) return [];
 
   return [...new Set(storedIds)]
-    .map(Number)
-    .filter((songId) => Number.isFinite(songId) && validIds.has(songId));
+    .map((songId) => LEGACY_NUMERIC_IDS[songId] || songId)
+    .filter((songId) => validIds.has(songId));
 }
 
 export {

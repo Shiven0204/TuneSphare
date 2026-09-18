@@ -1,9 +1,8 @@
-import { songs } from "../data/songs.js";
 import SongList from "../components/song/SongList.jsx";
 import { useLikes } from "../context/LikeContext.jsx";
 import { useRecentlyPlayed } from "../context/RecentlyPlayedContext.jsx";
 
-function Home() {
+function Home({ songs }) {
     const { likedSongs, clearLikes } = useLikes();
     const { recentlyPlayedSongs, clearRecentlyPlayed } = useRecentlyPlayed();
 
@@ -17,7 +16,7 @@ function Home() {
                     </div>
                     <span className="song-count">{songs.length} songs</span>
                 </div>
-                <SongList songs={songs} />
+                <SongList songs={songs} emptyMessage="No songs found. Add music to the music folder and regenerate the library." />
             </section>
 
             <section className="library-section" id="liked-songs" aria-labelledby="liked-title">

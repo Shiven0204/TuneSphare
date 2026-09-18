@@ -28,6 +28,20 @@ body {
   line-height: 1.5;
 }
 
+.app-state {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+  background: var(--color-bg);
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.app-state-error {
+  color: #fb7185;
+}
+
 .app-layout {
   min-height: calc(100vh - var(--player-height));
   padding-bottom: var(--player-height);

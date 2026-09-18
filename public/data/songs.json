@@ -1,0 +1,42 @@
+[
+  {
+    "id": "bairan",
+    "title": "Bairan",
+    "artist": "Unknown Artist",
+    "album": "Unknown Album",
+    "genre": "Unknown",
+    "popularity": 0,
+    "source": "/music/Banjaare%20-%20Bairan%20-%20(320%20Kbps).mp3",
+    "cover": "/images/covers/bairan.jpg"
+  },
+  {
+    "id": "barsaat",
+    "title": "Barsaat",
+    "artist": "Unknown Artist",
+    "album": "Unknown Album",
+    "genre": "Unknown",
+    "popularity": 0,
+    "source": "/music/Banjaare%20%26%20Roni%20-%20Barsaat%20-%20(320%20Kbps).mp3",
+    "cover": "/images/covers/barsaat.jpg"
+  },
+  {
+    "id": "tu-zaroori",
+    "title": "Tu Zaroori",
+    "artist": "Unknown Artist",
+    "album": "Unknown Album",
+    "genre": "Unknown",
+    "popularity": 0,
+    "source": "/music/Sharib%20Toshi%2C%20Sunidhi%20Chauhan%2C%20%26%20Sharib%20Sabri%20-%20Tu%20Zaroori%20(From%20_Zid_)%20-%20(320%20Kbps).mp3",
+    "cover": "/images/covers/tu-zaroori.jpg"
+  },
+  {
+    "id": "zinda",
+    "title": "Zinda",
+    "artist": "Unknown Artist",
+    "album": "Unknown Album",
+    "genre": "Unknown",
+    "popularity": 0,
+    "source": "/music/Zinda%20(From%20_Bhaag%20Milkha%20Bhaag_).mp3",
+    "cover": null
+  }
+]
