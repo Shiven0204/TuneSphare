@@ -5,7 +5,7 @@ import TopBar from "./TopBar.jsx";
 import MusicPlayer from "../player/MusicPlayer.jsx";
 import QueuePanel from "../queue/QueuePanel.jsx";
 
-function AppLayout({ children }) {
+function AppLayout({ children, searchQuery, onSearchChange }) {
     const [isNavigationOpen, setIsNavigationOpen] = useState(false);
     const [isQueueOpen, setIsQueueOpen] = useState(false);
     const closeNavigation = () => setIsNavigationOpen(false);
@@ -15,7 +15,11 @@ function AppLayout({ children }) {
             <Sidebar isOpen={isNavigationOpen} onClose={closeNavigation} />
             <MobileNav isOpen={isNavigationOpen} onClose={closeNavigation} />
             <div className="page-area">
-                <TopBar onMenuOpen={() => setIsNavigationOpen(true)} />
+                <TopBar
+                    onMenuOpen={() => setIsNavigationOpen(true)}
+                    searchQuery={searchQuery}
+                    onSearchChange={onSearchChange}
+                />
                 <main className="main-content">{children}</main>
                 <QueuePanel isOpen={isQueueOpen} onClose={() => setIsQueueOpen(false)} />
             </div>

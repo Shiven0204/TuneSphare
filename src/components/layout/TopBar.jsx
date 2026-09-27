@@ -1,4 +1,6 @@
-function TopBar({ onMenuOpen }) {
+function TopBar({ onMenuOpen, searchQuery, onSearchChange }) {
+    const hasQuery = searchQuery.trim().length > 0;
+
     return (
         <header className="topbar">
             <button
@@ -29,7 +31,24 @@ function TopBar({ onMenuOpen }) {
             <form className="search-form" role="search" onSubmit={(event) => event.preventDefault()}>
                 <span className="search-icon" aria-hidden="true">⌕</span>
                 <label className="sr-only" htmlFor="song-search">Search songs</label>
-                <input id="song-search" type="search" placeholder="Search songs or artists" autoComplete="off" />
+                <input
+                    id="song-search"
+                    type="search"
+                    placeholder="Search songs or artists"
+                    autoComplete="off"
+                    value={searchQuery}
+                    onChange={(event) => onSearchChange(event.target.value)}
+                />
+                {hasQuery ? (
+                    <button
+                        className="search-clear"
+                        type="button"
+                        aria-label="Clear search"
+                        onClick={() => onSearchChange("")}
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
+                ) : null}
             </form>
         </header>
     );

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AppLayout from "./components/layout/AppLayout.jsx";
 import Home from "./pages/Home.jsx";
 import { PlayerProvider } from "./context/PlayerContext.jsx";
@@ -10,6 +11,7 @@ import "./styles/layout.css";
 
 function App() {
     const { songs, status, error } = useSongs();
+    const [searchQuery, setSearchQuery] = useState("");
 
     if (status === "loading") {
         return <main className="app-state" role="status">Loading your music...</main>;
@@ -25,8 +27,8 @@ function App() {
                 <LikeProvider songs={songs}>
                     <RecentlyPlayedProvider songs={songs}>
                         <PlayerProvider songs={songs}>
-                            <AppLayout>
-                                <Home songs={songs} />
+                            <AppLayout searchQuery={searchQuery} onSearchChange={setSearchQuery}>
+                                <Home songs={songs} searchQuery={searchQuery} />
                             </AppLayout>
                         </PlayerProvider>
                     </RecentlyPlayedProvider>
